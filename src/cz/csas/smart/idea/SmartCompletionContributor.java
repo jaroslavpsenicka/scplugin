@@ -9,10 +9,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.intellij.patterns.PlatformPatterns.psiElement;
+import static org.apache.commons.lang.StringUtils.strip;
 
 public class SmartCompletionContributor extends CompletionContributor {
 
@@ -31,40 +29,27 @@ public class SmartCompletionContributor extends CompletionContributor {
 
 	    @Override
 	    protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
-		    List<String> names = this.collectParentNames(parameters.getPosition().getParent());
-		    result.addLookupAdvertisement(names.toString());
+		    String path = this.getPath(parameters.getPosition().getParent());
+		    result.addLookupAdvertisement(path);
 		    for (String keyword : KEYWORDS) {
 			    result.addElement(LookupElementBuilder.create("\"" + keyword + "\": ").withPresentableText(keyword));
 		    }
 	    }
 
-	    private List<String> collectParentNames(PsiElement element) {
-		    return collectParentNames(element, new ArrayList<>());
-	    }
-
-
-	    private List<String> collectParentNames(PsiElement element, List<String> names) {
-		    PsiElement parent = findParent(element, names.size() == 0 ? 3 : 2);
-		    if (parent != null && parent instanceof JsonElement) {
-			    PsiElement text = parent.getFirstChild();
-			    if (text instanceof JsonStringLiteral) {
-				    names.add(0, text.getText());
+	    private String getPath(PsiElement element) {
+		    StringBuffer buff = new StringBuffer();
+	    	while (element instanceof JsonElement) {
+			    PsiElement text = element.getFirstChild();
+			    if (text instanceof JsonStringLiteral && !CompletionInitializationContext.DUMMY_IDENTIFIER.equals(text.getText())) {
+			    	if (buff.length() > 0) buff.insert(0, "/");
+				    buff.insert(0, strip(text.getText(), "\""));
 			    }
 
-			    collectParentNames(parent, names);
+			    element = element.getParent();
 		    }
 
-		    return names;
-	    }
-
-	    private PsiElement findParent(PsiElement element, int level) {
-		    for (int i = 0; i < level; i++) {
-			    if (element instanceof JsonElement) {
-				    element = element.getParent();
-			    } else return null;
-		    }
-
-		    return element;
+		    buff.insert(0, "/");
+		    return buff.toString();
 	    }
 
     }

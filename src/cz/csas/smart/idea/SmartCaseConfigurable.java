@@ -1,25 +1,21 @@
 package cz.csas.smart.idea;
 
-import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.ui.DocumentAdapter;
+import cz.csas.smart.idea.model.Profile;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.List;
 
 public class SmartCaseConfigurable implements Configurable {
 
     private JPanel component;
-    private JTextField textServerUrl;
+    private JComboBox<Profile> profileCombo;
     private boolean isDirty;
-
-    public static final String SERVER_URL = "cz.csas.smart.serverUrl";
 
     @Nls
     @Override
@@ -36,44 +32,37 @@ public class SmartCaseConfigurable implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        JLabel labelServerUrl = new JLabel("Server URL:");
-        textServerUrl = new JTextField(20);
-        textServerUrl.getDocument().addDocumentListener(new DocumentAdapter() {
-            @Override
-            protected void textChanged(DocumentEvent documentEvent) {
-                isDirty = true;
-            }
-        });
-        labelServerUrl.setLabelFor(textServerUrl);
-        JButton testButton = new JButton("Connectivity Test");
-        testButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                boolean result = false;
-                String errorMessage = "";
-                try {
-                    SmartCaseAPIClient smartCaseAPIClient = new SmartCaseAPIClient(textServerUrl.getText());
-                    result = smartCaseAPIClient.ping();
-                } catch (Exception ex) {
-                    result = false;
-                    errorMessage = ex.getMessage();
-                } finally {
-                    JOptionPane.showMessageDialog(null, result ?
-                        "OK, looks good!" : "Nope, " + errorMessage +
-                        ", make sure the server URL contains both the port and context.");
-                }
-            }
-        });
+	    profileCombo = new JComboBox<>();
+	    ProfileComponent.getInstance().getProfiles().forEach(p -> profileCombo.addItem(p));
+		profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
+		profileCombo.addActionListener(actionEvent -> isDirty = true);
 
-        JPanel serverPanel = new JPanel(new BorderLayout(10, 0));
-        serverPanel.add(labelServerUrl, BorderLayout.WEST);
-        serverPanel.add(textServerUrl, BorderLayout.CENTER);
-        JPanel serverTools = new JPanel(new BorderLayout(10, 0));
-        serverTools.add(testButton, BorderLayout.EAST);
-        serverPanel.add(serverTools, BorderLayout.SOUTH);
+	    JLabel profileLabel = new JLabel("Profile:");
+        profileLabel.setLabelFor(profileCombo);
+        JButton profileNew = new JButton("Add profile");
+	    profileNew.addActionListener(actionEvent -> {
+		    List<Profile> newProfiles = ProfileComponent.getInstance().addProfiles(FileChooser.chooseFiles(new FileChooserDescriptor(
+			    true, false, false, false, false, true)
+			    .withTitle("Select Profile")
+			    .withFileFilter(f -> "profile".equals(f.getExtension())),
+			    null, null));
+		    if (!newProfiles.isEmpty()) {
+			    isDirty = true;
+			    newProfiles.forEach(p -> profileCombo.addItem(p));
+			    profileCombo.setSelectedItem(newProfiles.get(0));
+		    }
+	    });
+
+        JPanel profilePanel = new JPanel(new BorderLayout(10, 10)) {{
+	        add(profileLabel, BorderLayout.WEST);
+	        add(profileCombo, BorderLayout.CENTER);
+	        add(new JPanel(new BorderLayout(10, 10)) {{
+		        add(profileNew, BorderLayout.EAST);
+	        }});
+        }};
 
         component = new JPanel(new BorderLayout());
-        component.add(serverPanel, BorderLayout.NORTH);
+        component.add(profilePanel, BorderLayout.NORTH);
         return component;
     }
 
@@ -83,20 +72,18 @@ public class SmartCaseConfigurable implements Configurable {
     }
 
     @Override
-    public void apply() throws ConfigurationException {
-        PropertiesComponent.getInstance().setValue(SERVER_URL, textServerUrl.getText());
+    public void apply() {
+	    ProfileComponent.getInstance().setActiveProfile((Profile) profileCombo.getSelectedItem());
     }
 
     @Override
     public void reset() {
-        String serverUrlValue = PropertiesComponent.getInstance().getValue(SERVER_URL);
-        if (serverUrlValue != null) {
-            textServerUrl.setText(serverUrlValue);
-        }
+	    profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
     }
 
     @Override
     public void disposeUIResources() {
         component = null;
     }
+
 }
