@@ -34,12 +34,13 @@ public class SmartCaseConfigurable implements Configurable {
     public JComponent createComponent() {
 	    profileCombo = new JComboBox<>();
 	    ProfileComponent.getInstance().getProfiles().forEach(p -> profileCombo.addItem(p));
-		profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
-		profileCombo.addActionListener(actionEvent -> isDirty = true);
+	    profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
+	    profileCombo.addActionListener(actionEvent -> isDirty = true);
 
 	    JLabel profileLabel = new JLabel("Profile:");
-        profileLabel.setLabelFor(profileCombo);
-        JButton profileNew = new JButton("Add profile");
+	    profileLabel.setLabelFor(profileCombo);
+
+	    JButton profileNew = new JButton("Add profile");
 	    profileNew.addActionListener(actionEvent -> {
 		    List<Profile> newProfiles = ProfileComponent.getInstance().addProfiles(FileChooser.chooseFiles(new FileChooserDescriptor(
 			    true, false, false, false, false, true)
