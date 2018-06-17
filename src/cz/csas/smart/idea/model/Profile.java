@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public class Profile {
 	private String path;
 
 	private String name;
-	private List<Completion> completions;
+	private List<Completion> completions = new ArrayList<>();
 	private Map<String, List<Completion.Value>> completionMap;
 
 	public Profile(InputStream stream) {

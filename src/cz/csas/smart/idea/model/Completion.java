@@ -36,6 +36,7 @@ public class Completion {
 
 		private String type;
 		private String defaultValue;
+		private String of;
 		private String text;
 
 		public static final String STRING = "string";
@@ -45,12 +46,18 @@ public class Completion {
 		public static final String OBJECT = "object";
 		public static final String ARRAY = "array";
 
+		public static final String ATTRIBUTE_NAME = "attributeName";
+
 		public String getType() {
 			return type;
 		}
 
 		public String getDefaultValue() {
 			return defaultValue;
+		}
+
+		public String getOf() {
+			return of;
 		}
 
 		public String getText() {

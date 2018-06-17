@@ -20,9 +20,13 @@
             <value type="integer" defaultValue="100">priority</value>
             <value type="string" defaultValue="mailbox@csas.cz">mailbox</value>
             <value type="boolean" defaultValue="true">expression</value>
-            <value type="string">emailContentFieldName</value>
-            <value type="string">emailSubjectFieldName</value>
             <value type="string">emailFromFieldName</value>
+            <value type="string">emailSubjectFieldName</value>
+            <value type="string">emailContentFieldName</value>
+        </completion>
+        <completion for="/emailConfigurations/emailFromFieldName">
+            <value type="attributeName" of="STRING"/>
+
         </completion>
     </completions>
 
