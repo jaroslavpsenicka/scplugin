@@ -15,6 +15,7 @@ public class SmartCaseConfigurable implements Configurable {
 
     private JPanel component;
     private JComboBox<Profile> profileCombo;
+    private JButton profileReload;
     private boolean isDirty;
 
     @Nls
@@ -35,7 +36,11 @@ public class SmartCaseConfigurable implements Configurable {
 	    profileCombo = new JComboBox<>();
 	    ProfileComponent.getInstance().getProfiles().forEach(p -> profileCombo.addItem(p));
 	    profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
-	    profileCombo.addActionListener(actionEvent -> isDirty = true);
+	    profileCombo.addActionListener(actionEvent -> {
+		    Profile profile = (Profile) profileCombo.getSelectedItem();
+		    profileReload.setEnabled(profile != null && profile.canReload());
+	    	isDirty = true;
+	    });
 
 	    JLabel profileLabel = new JLabel("Profile:");
 	    profileLabel.setLabelFor(profileCombo);
@@ -54,13 +59,25 @@ public class SmartCaseConfigurable implements Configurable {
 		    }
 	    });
 
-        JPanel profilePanel = new JPanel(new BorderLayout(10, 10)) {{
-	        add(profileLabel, BorderLayout.WEST);
-	        add(profileCombo, BorderLayout.CENTER);
-	        add(new JPanel(new BorderLayout(10, 10)) {{
-		        add(profileNew, BorderLayout.EAST);
-	        }});
-        }};
+	    profileReload = new JButton("Reload");
+	    profileReload.setEnabled(false);
+	    profileReload.addActionListener(actionEvent -> {
+		    Profile profile = (Profile) profileCombo.getSelectedItem();
+		    if (profile != null) {
+		    	profile.reload();
+			    JOptionPane.showMessageDialog(null, "Reloaded.");
+		    }
+	    });
+
+	    JPanel profilePanel = new JPanel(new BorderLayout(10, 10));
+        profilePanel.add(profileLabel, BorderLayout.WEST);
+	    profilePanel.add(profileCombo, BorderLayout.CENTER);
+	    JPanel profileButtons = new JPanel();
+	    profileButtons.add(profileReload);
+	    profileButtons.add(profileNew);
+	    JPanel profileButtonsRight = new JPanel(new BorderLayout());
+	    profileButtonsRight.add(profileButtons, BorderLayout.EAST);
+	    profilePanel.add(profileButtonsRight, BorderLayout.SOUTH);
 
         component = new JPanel(new BorderLayout());
         component.add(profilePanel, BorderLayout.NORTH);
