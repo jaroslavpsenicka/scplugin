@@ -35,6 +35,7 @@ public class Completion {
 	public static class Value {
 
 		private String type;
+		private boolean required;
 		private String defaultValue;
 		private String of;
 		private String text;
@@ -50,6 +51,10 @@ public class Completion {
 
 		public String getType() {
 			return type;
+		}
+
+		public boolean isRequired() {
+			return required;
 		}
 
 		public String getDefaultValue() {

@@ -17,7 +17,6 @@ public class SmartCaseConfigurable implements Configurable {
 
     private JPanel component;
     private JComboBox<Profile> profileCombo;
-    private JLabel profileDescription;
     private JButton profileReload;
 	private JButton profileOpenInExplorer;
 	private boolean isDirty;
@@ -42,12 +41,11 @@ public class SmartCaseConfigurable implements Configurable {
 	    profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
 	    profileCombo.addActionListener(actionEvent -> {
 		    Profile profile = (Profile) profileCombo.getSelectedItem();
+		    isDirty = true;
 		    if (profile != null) {
-				profileReload.setEnabled(profile.canReload());
-				profileOpenInExplorer.setEnabled(Desktop.isDesktopSupported() && profile.canReload());
-			}
-		    profileDescription.setText(profile != null ? profile.getDescription() : "");
-	    	isDirty = true;
+			    profileReload.setEnabled(profile.canReload());
+			    profileOpenInExplorer.setEnabled(Desktop.isDesktopSupported() && profile.canReload());
+		    }
 	    });
 
 	    JLabel profileLabel = new JLabel("Completion Profile:");
@@ -77,9 +75,6 @@ public class SmartCaseConfigurable implements Configurable {
 		    }
 	    });
 
-	    profileDescription = new JLabel(ProfileComponent.getInstance().getActiveProfile().getDescription());
-		profileDescription.setForeground(Color.lightGray);
-
 		profileOpenInExplorer = new JButton("Open in Explorer");
 		profileOpenInExplorer.setEnabled(false);
 		profileOpenInExplorer.addActionListener(actionEvent -> {
@@ -102,7 +97,6 @@ public class SmartCaseConfigurable implements Configurable {
 	    profileButtons.add(profileReload);
 	    profileButtons.add(profileNew);
 	    JPanel profileInfo = new JPanel(new BorderLayout());
-	    profileInfo.add(profileDescription, BorderLayout.CENTER);
 	    profileInfo.add(profileButtons, BorderLayout.EAST);
 	    profilePanel.add(profileInfo, BorderLayout.SOUTH);
 

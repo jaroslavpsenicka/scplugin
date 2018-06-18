@@ -8,9 +8,9 @@ import com.intellij.json.psi.JsonStringLiteral;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.strip;
 
@@ -47,8 +47,10 @@ public class PsiUtils {
 	public static List<String> getAttributeNames(PsiElement element) {
 		PsiElement attributesElement = findFirstChild(findRoot(element), "\"attributes\"");
 		if (attributesElement != null) {
-			Collection<JsonProperty> props = PsiTreeUtil.findChildrenOfType(attributesElement, JsonProperty.class);
-			props.forEach(p -> System.out.println(p));
+			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
+				.map(p -> p.getValue().getText())
+				.map(p -> strip(p, "\""))
+				.collect(Collectors.toList());
 		}
 
 		return Collections.emptyList();
