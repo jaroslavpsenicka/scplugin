@@ -20,6 +20,7 @@ public class Profile {
 	private String path;
 
 	private String name;
+	private String description;
 	private List<Completion> completions = new ArrayList<>();
 	private Map<String, List<Completion.Value>> completionMap;
 
@@ -45,6 +46,14 @@ public class Profile {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public String getPath() {
+		return path;
 	}
 
 	public List<Completion> getCompletions() {
@@ -82,6 +91,7 @@ public class Profile {
 
 		Profile profile = (Profile) xstream.fromXML(stream);
 		this.name = profile.getName();
+		this.description = profile.getDescription();
 		this.completionMap = profile.getCompletionMap();
 	}
 

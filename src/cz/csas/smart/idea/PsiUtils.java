@@ -3,10 +3,12 @@ package cz.csas.smart.idea;
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
 import com.intellij.json.psi.JsonElement;
 import com.intellij.json.psi.JsonFile;
+import com.intellij.json.psi.JsonProperty;
 import com.intellij.json.psi.JsonStringLiteral;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,14 +40,15 @@ public class PsiUtils {
 	private static PsiElement findFirstChild(PsiElement element, String childName) {
 		if (element == null) return null;
 		return PsiTreeUtil.findChildrenOfType(element, JsonStringLiteral.class).stream()
-			.filter(e -> childName.equals(e.getName()))
+			.filter(e -> childName.equals(e.getText()))
 			.findFirst().orElse(null);
 	}
 
 	public static List<String> getAttributeNames(PsiElement element) {
-		PsiElement attributesElement = findFirstChild(findRoot(element), "attributes");
+		PsiElement attributesElement = findFirstChild(findRoot(element), "\"attributes\"");
 		if (attributesElement != null) {
-
+			Collection<JsonProperty> props = PsiTreeUtil.findChildrenOfType(attributesElement, JsonProperty.class);
+			props.forEach(p -> System.out.println(p));
 		}
 
 		return Collections.emptyList();

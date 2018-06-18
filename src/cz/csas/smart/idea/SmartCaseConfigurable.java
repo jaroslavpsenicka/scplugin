@@ -9,16 +9,20 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class SmartCaseConfigurable implements Configurable {
 
     private JPanel component;
     private JComboBox<Profile> profileCombo;
+    private JLabel profileDescription;
     private JButton profileReload;
-    private boolean isDirty;
+	private JButton profileOpenInExplorer;
+	private boolean isDirty;
 
-    @Nls
+	@Nls
     @Override
     public String getDisplayName() {
         return "SmartCase";
@@ -38,11 +42,15 @@ public class SmartCaseConfigurable implements Configurable {
 	    profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
 	    profileCombo.addActionListener(actionEvent -> {
 		    Profile profile = (Profile) profileCombo.getSelectedItem();
-		    profileReload.setEnabled(profile != null && profile.canReload());
+		    if (profile != null) {
+				profileReload.setEnabled(profile.canReload());
+				profileOpenInExplorer.setEnabled(Desktop.isDesktopSupported() && profile.canReload());
+			}
+		    profileDescription.setText(profile != null ? profile.getDescription() : "");
 	    	isDirty = true;
 	    });
 
-	    JLabel profileLabel = new JLabel("Profile:");
+	    JLabel profileLabel = new JLabel("Completion Profile:");
 	    profileLabel.setLabelFor(profileCombo);
 
 	    JButton profileNew = new JButton("Add profile");
@@ -69,15 +77,34 @@ public class SmartCaseConfigurable implements Configurable {
 		    }
 	    });
 
-	    JPanel profilePanel = new JPanel(new BorderLayout(10, 10));
+	    profileDescription = new JLabel(ProfileComponent.getInstance().getActiveProfile().getDescription());
+		profileDescription.setForeground(Color.lightGray);
+
+		profileOpenInExplorer = new JButton("Open in Explorer");
+		profileOpenInExplorer.setEnabled(false);
+		profileOpenInExplorer.addActionListener(actionEvent -> {
+			Profile profile = (Profile) profileCombo.getSelectedItem();
+			if (profile != null) {
+				try {
+					Desktop.getDesktop().open(new File(profile.getPath()));
+				} catch (IOException ex) {
+					JOptionPane.showMessageDialog(null, "Error opening the url: " +
+						profile.getPath() + ". Help yourself please.");
+				}
+			}
+		});
+
+		JPanel profilePanel = new JPanel(new BorderLayout(10, 10));
         profilePanel.add(profileLabel, BorderLayout.WEST);
 	    profilePanel.add(profileCombo, BorderLayout.CENTER);
 	    JPanel profileButtons = new JPanel();
+		profileButtons.add(profileOpenInExplorer);
 	    profileButtons.add(profileReload);
 	    profileButtons.add(profileNew);
-	    JPanel profileButtonsRight = new JPanel(new BorderLayout());
-	    profileButtonsRight.add(profileButtons, BorderLayout.EAST);
-	    profilePanel.add(profileButtonsRight, BorderLayout.SOUTH);
+	    JPanel profileInfo = new JPanel(new BorderLayout());
+	    profileInfo.add(profileDescription, BorderLayout.CENTER);
+	    profileInfo.add(profileButtons, BorderLayout.EAST);
+	    profilePanel.add(profileInfo, BorderLayout.SOUTH);
 
         component = new JPanel(new BorderLayout());
         component.add(profilePanel, BorderLayout.NORTH);

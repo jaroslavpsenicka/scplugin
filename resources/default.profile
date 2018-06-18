@@ -1,5 +1,6 @@
 <profile>
     <name>Default Profile</name>
+    <description>One-size-fits-all profile.</description>
     <completions>
         <completion for="/">
             <value type="string">name</value>
