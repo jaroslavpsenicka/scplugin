@@ -6,6 +6,8 @@ import com.intellij.json.psi.JsonProperty;
 import com.intellij.json.psi.JsonStringLiteral;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
+import cz.csas.smart.idea.completion.DynamicCompletionContributor;
+import cz.csas.smart.idea.completion.StaticCompletionContributor;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 

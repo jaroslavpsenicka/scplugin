@@ -1,4 +1,4 @@
-package cz.csas.smart.idea;
+package cz.csas.smart.idea.completion;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -8,6 +8,8 @@ import com.intellij.openapi.editor.CaretModel;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
+import cz.csas.smart.idea.ProfileComponent;
+import cz.csas.smart.idea.PsiUtils;
 import cz.csas.smart.idea.model.Completion;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,9 +17,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class StaticCompletionContributor extends CompletionProvider<CompletionParameters> {
+public class StaticCompletionContributor extends CompletionProvider<CompletionParameters> {
 
-	static final StaticCompletionContributor INSTANCE = new StaticCompletionContributor();
+	public static final StaticCompletionContributor INSTANCE = new StaticCompletionContributor();
 	private final Comparator<Completion.Value> bySeverityAndName = (first, second) -> {
 		if (!first.isRequired() && second.isRequired()) return -1;
 		else if (first.isRequired() && !second.isRequired()) return 1;
