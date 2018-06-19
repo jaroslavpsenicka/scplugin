@@ -12,7 +12,7 @@ public class ProfileSerializationTest {
 		Profile profile = new Profile(getClass().getResourceAsStream("/default.profile"));
 		assertEquals("Default Profile", profile.getName());
 		assertEquals("[name, label, description, revision, caseType, createdBy, createDate, " +
-			"presentationSubject, emailConfigurations, configurations, header, attributes, tasks]",
+			"presentationSubject, emailConfigurations, configurations, header, overview, attributes, tasks]",
 			profile.getCompletionsForPath("/").toString());
 	}
 

@@ -12,7 +12,4 @@ public class CompletionList {
 	@XStreamImplicit
 	private List<Completion> values = new ArrayList<>();
 
-	public void addCompletion(Completion completion) {
-		values.add(completion);
-	}
 }

@@ -96,7 +96,7 @@ public class Profile {
 	}
 
 	public String toString() {
-		return name + ((description != null) ? "(" + description + ")" : "");
+		return name + ((description != null) ? " (" + description + ")" : "");
 	}
 
 
