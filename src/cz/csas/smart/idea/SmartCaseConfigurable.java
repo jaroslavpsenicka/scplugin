@@ -48,7 +48,7 @@ public class SmartCaseConfigurable implements Configurable {
 	    contents.add(createLabel("Completion Profile:", component2));
 	    contents.add(component2);
 
-	    SpringUtilities.makeCompactGrid(contents, 2, 2, 5, 5, 5, 5);
+	    SpringUtilities.makeCompactGrid(contents, 2, 2, 0, 0, 5, 5);
 
 	    this.component = new JPanel(new BorderLayout());
 		this.component.add(contents, BorderLayout.NORTH);
