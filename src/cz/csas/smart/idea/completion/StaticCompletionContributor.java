@@ -50,8 +50,9 @@ public class StaticCompletionContributor extends CompletionProvider<CompletionPa
 	}
 
 	private boolean notYetUsed(Completion.Value value, PsiElement element) {
+		String fvalue = ProfileComponent.getInstance().useQuotes() ? "\"" + value.getText() + "\"" : value.getText();
 		return !PsiTreeUtil.findChildrenOfType(element.getParent().getParent(), JsonProperty.class).stream()
-			.anyMatch(p -> ("\"" + value.getText() + "\"").equals(p.getNameElement().getText()));
+			.anyMatch(p -> fvalue.equals(p.getNameElement().getText()));
 	}
 
 	@NotNull

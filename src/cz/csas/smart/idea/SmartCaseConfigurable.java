@@ -160,7 +160,7 @@ public class SmartCaseConfigurable implements Configurable {
 			}
 		});
 
-        quotesCheckbox = new JCheckBox("Wrap keys in quotes");
+        quotesCheckbox = new JCheckBox("Quote element names");
         quotesCheckbox.setSelected(ProfileComponent.getInstance().useQuotes());
 
         JPanel profilePanel = new JPanel(new BorderLayout(5, 5));

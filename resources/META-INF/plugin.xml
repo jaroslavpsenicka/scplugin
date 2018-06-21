@@ -28,10 +28,10 @@
         <lang.parserDefinition language="JSON" implementationClass="com.intellij.json.JsonParserDefinition"/>
         <lang.syntaxHighlighterFactory language="JSON" implementationClass="com.intellij.json.highlighting.JsonSyntaxHighlighterFactory"/>
 
-        <!-- Code style and formatting -->
+        <!-- Code style and formatting
         <codeStyleSettingsProvider implementation="com.intellij.json.formatter.JsonCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider implementation="com.intellij.json.formatter.JsonLanguageCodeStyleSettingsProvider"/>
-        <colorSettingsPage implementation="com.intellij.json.highlighting.JsonColorsPage"/>
+        <colorSettingsPage implementation="com.intellij.json.highlighting.JsonColorsPage"/ -->
         <lang.formatter language="JSON" implementationClass="com.intellij.json.formatter.JsonFormattingBuilderModel"/>
         <lang.braceMatcher language="JSON" implementationClass="com.intellij.json.JsonBraceMatcher"/>
         <quoteHandler fileType="JSON" className="com.intellij.json.JsonQuoteHandler"/>
@@ -78,7 +78,6 @@
             text="Upload" description="Upload to server">
             <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last"/>
             <keyboard-shortcut first-keystroke="control U" keymap="$default" replace-all="true"/>
-            <keyboard-shortcut first-keystroke="control shift U" keymap="$default" replace-all="true"/>
         </action>
     </actions>
 
