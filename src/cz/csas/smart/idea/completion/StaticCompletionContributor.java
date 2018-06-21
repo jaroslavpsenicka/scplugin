@@ -32,12 +32,14 @@ public class StaticCompletionContributor extends CompletionProvider<CompletionPa
 		result.addLookupAdvertisement(path);
 		List<Completion.Value> completions = ProfileComponent.getInstance().getActiveProfile().getCompletionsForPath(path);
 		if (completions != null) {
+			Boolean useQuotes = ProfileComponent.getInstance().useQuotes();
 			AtomicInteger idx = new AtomicInteger(0);
 			completions.stream()
 				.filter(c -> notYetUsed(c, parameters.getPosition().getParent()))
 				.sorted(bySeverityAndName)
 				.forEach(c -> {
-					LookupElement element = LookupElementBuilder.create("\"" + c + "\": " + getDefaultValue(c))
+					String key = useQuotes ? ("\"" + c + "\"") : c.getText();
+					LookupElement element = LookupElementBuilder.create(key + ": " + getDefaultValue(c))
 						.withPresentableText(c.getText())
 						.withBoldness(c.isRequired())
 						.withInsertHandler((ctx, item) -> handleInsert(ctx, c));

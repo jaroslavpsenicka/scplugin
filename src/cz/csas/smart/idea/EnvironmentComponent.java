@@ -14,6 +14,7 @@ public class EnvironmentComponent {
 	private static EnvironmentComponent instance = new EnvironmentComponent();
 
 	public static final String ACTIVE_ENVIRONMENT_NAME = "cz.csas.smart.idea.activeEnvironment";
+	public static final String AUTODEPLOY = "cz.csas.smart.idea.autoDeploy";
 
 	public static final EnvironmentComponent getInstance() {
 		return instance;
@@ -46,4 +47,12 @@ public class EnvironmentComponent {
 		PropertiesComponent.getInstance().setValue(ACTIVE_ENVIRONMENT_NAME, environment.getName());
 	}
 
+	public boolean isAutoDeploy() {
+		String value = PropertiesComponent.getInstance().getValue(AUTODEPLOY);
+		return (value != null) ? Boolean.valueOf(value) : true;
+	}
+
+	public void setAutoDeploy(boolean autoDeploy) {
+		PropertiesComponent.getInstance().setValue(AUTODEPLOY, String.valueOf(autoDeploy));
+	}
 }

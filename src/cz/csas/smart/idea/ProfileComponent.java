@@ -22,6 +22,7 @@ public class ProfileComponent {
 
 	public static final String ACTIVE_PROFILE_NAME = "cz.csas.smart.idea.activeProfile";
 	public static final String CUSTOM_PROFILES = "cz.csas.smart.idea.customProfiles";
+	public static final String USE_QUOTES_FOR_KEYS = "cz.csas.smart.idea.useQuotesForKeys";
 
 	public static final ProfileComponent getInstance() {
 		return instance;
@@ -73,5 +74,14 @@ public class ProfileComponent {
 		}
 
 		return Collections.emptyList();
+	}
+
+    public boolean useQuotes() {
+		String value = PropertiesComponent.getInstance().getValue(USE_QUOTES_FOR_KEYS);
+		return value != null ? Boolean.valueOf(value) : false;
+    }
+
+	public void setUseQuotes(boolean value) {
+		PropertiesComponent.getInstance().setValue(USE_QUOTES_FOR_KEYS, value);
 	}
 }

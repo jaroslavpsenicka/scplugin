@@ -1,4 +1,4 @@
-    <idea-plugin version="2">
+<idea-plugin>
     <id>cz.csas.smart</id>
     <name>SmartCase IDEA Plugin</name>
     <version>0.1</version>
@@ -74,8 +74,11 @@
 
 
     <actions>
-        <action id="smart.validate" class="cz.csas.smart.idea.ValidateAction" text="Validate" description="Validates SmartCase Model">
+        <action id="smart.upload" class="cz.csas.smart.idea.UploadAction"
+            text="Upload" description="Upload to server">
             <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last"/>
+            <keyboard-shortcut first-keystroke="control U" keymap="$default" replace-all="true"/>
+            <keyboard-shortcut first-keystroke="control shift U" keymap="$default" replace-all="true"/>
         </action>
     </actions>
 

@@ -23,9 +23,11 @@ public class SmartCaseConfigurable implements Configurable {
 	private JComboBox<Environment> environmentCombo;
     private JButton profileReload;
 	private JButton profileOpenInExplorer;
-	private boolean isDirty;
+	private JCheckBox deployCheckBox;
+    private JCheckBox quotesCheckbox;
+    private boolean isDirty;
 
-	@Nls
+    @Nls
     @Override
     public String getDisplayName() {
         return "SmartCase";
@@ -63,13 +65,17 @@ public class SmartCaseConfigurable implements Configurable {
 	@Override
 	public void apply() {
 		EnvironmentComponent.getInstance().setActiveEnvironment((Environment) environmentCombo.getSelectedItem());
-		ProfileComponent.getInstance().setActiveProfile((Profile) profileCombo.getSelectedItem());
+		EnvironmentComponent.getInstance().setAutoDeploy(deployCheckBox.isSelected());
+        ProfileComponent.getInstance().setActiveProfile((Profile) profileCombo.getSelectedItem());
+        ProfileComponent.getInstance().setUseQuotes(quotesCheckbox.isSelected());
 	}
 
 	@Override
 	public void reset() {
 		environmentCombo.setSelectedItem(EnvironmentComponent.getInstance().getActiveEnvironment());
+		deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
 		profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
+        quotesCheckbox.setSelected(ProfileComponent.getInstance().useQuotes());
 	}
 
 	@Override
@@ -93,8 +99,12 @@ public class SmartCaseConfigurable implements Configurable {
 		environmentCombo.setSelectedItem(EnvironmentComponent.getInstance().getActiveEnvironment());
 		environmentCombo.addActionListener(actionEvent -> isDirty = true);
 
-		JPanel environmentPanel = new JPanel(new BorderLayout(10, 10));
+		deployCheckBox = new JCheckBox("Auto deploy after successful upload");
+		deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
+
+		JPanel environmentPanel = new JPanel(new BorderLayout(5, 5));
 		environmentPanel.add(environmentCombo, BorderLayout.CENTER);
+		environmentPanel.add(deployCheckBox, BorderLayout.SOUTH);
 		return environmentPanel;
 	}
 
@@ -115,10 +125,10 @@ public class SmartCaseConfigurable implements Configurable {
 		JButton profileNew = new JButton("Add profile");
 		profileNew.addActionListener(actionEvent -> {
 			List<Profile> newProfiles = ProfileComponent.getInstance().addProfiles(FileChooser.chooseFiles(new FileChooserDescriptor(
-							true, false, false, false, false, true)
-							.withTitle("Select Profile")
-							.withFileFilter(f -> "profile".equals(f.getExtension())),
-					null, null));
+                true, false, false, false, false, true)
+                .withTitle("Select Profile")
+                .withFileFilter(f -> "profile".equals(f.getExtension())),
+                null, null));
 			if (!newProfiles.isEmpty()) {
 				isDirty = true;
 				newProfiles.forEach(p -> profileCombo.addItem(p));
@@ -145,19 +155,23 @@ public class SmartCaseConfigurable implements Configurable {
 					Desktop.getDesktop().open(new File(profile.getPath()));
 				} catch (IOException ex) {
 					JOptionPane.showMessageDialog(null, "Error opening the url: " +
-							profile.getPath() + ". Help yourself please.");
+                        profile.getPath() + ". Help yourself please.");
 				}
 			}
 		});
 
-		JPanel profilePanel = new JPanel(new BorderLayout(10, 10));
+        quotesCheckbox = new JCheckBox("Wrap keys in quotes");
+        quotesCheckbox.setSelected(ProfileComponent.getInstance().useQuotes());
+
+        JPanel profilePanel = new JPanel(new BorderLayout(5, 5));
 		profilePanel.add(profileCombo, BorderLayout.CENTER);
 		JPanel profileButtons = new JPanel();
 		profileButtons.add(profileOpenInExplorer);
 		profileButtons.add(profileReload);
 		profileButtons.add(profileNew);
 		JPanel profileInfo = new JPanel(new BorderLayout());
-		profileInfo.add(profileButtons, BorderLayout.EAST);
+        profileInfo.add(profileButtons, BorderLayout.EAST);
+        profileInfo.add(quotesCheckbox, BorderLayout.SOUTH);
 		profilePanel.add(profileInfo, BorderLayout.SOUTH);
 		return profilePanel;
 	}
