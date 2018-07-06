@@ -8,6 +8,7 @@ import cz.csas.smart.idea.model.NameType;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.strip;
@@ -20,7 +21,7 @@ public class PsiUtils {
 			PsiElement text =  (element instanceof JsonProperty) ?
 				((JsonProperty) element).getNameElement() : element.getFirstChild();
 			if ((text instanceof JsonStringLiteral || text instanceof JsonReferenceExpression) &&
-				!CompletionInitializationContext.DUMMY_IDENTIFIER.equals(text.getText())) {
+				!CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED.equals(text.getText())) {
 				if (buff.length() > 0) buff.insert(0, "/");
 				buff.insert(0, strip(text.getText(), "\""));
 			}
@@ -33,35 +34,32 @@ public class PsiUtils {
 	}
 
 	public static PsiElement findRoot(PsiElement element) {
-		if (element == null) return null;
 		return PsiTreeUtil.getParentOfType(element, JsonFile.class);
 	}
 
-	private static PsiElement findFirstChild(PsiElement element, String childName) {
-		if (element == null) return null;
-		return PsiTreeUtil.findChildrenOfType(element, JsonStringLiteral.class).stream()
-			.filter(e -> childName.equals(e.getText()) || ("\"" + childName + "\"").equals(e.getText()))
-			.findFirst().orElse(null);
-	}
-
-	public static List<NameType> getAttributes(PsiElement element) {
-		PsiElement attributesElement = findFirstChild(findRoot(element), "attributes");
-		if (attributesElement != null) {
+	public static List<NameType> getAttributes(PsiElement element, String ofType) {
+		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
+			.filter(jp -> "attributes".equals(jp.getName()))
+			.findFirst();
+		if (attributesProperty.isPresent()) {
+			JsonProperty attributesElement = attributesProperty.get();
 			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
-				.filter(p -> "name".equals(p.getNameElement().getText()) || "\"name\"".equals(p.getNameElement().getText()))
-				.map(p -> new NameType(strip(p.getValue().getText(), "\""), findType(p)))
+				.filter(jp -> "name".equals(jp.getName()))
+				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findType(jp)))
+				.filter(nt -> nt.isType(ofType))
 				.collect(Collectors.toList());
 		}
 
 		return Collections.emptyList();
 	}
 
-	private static String findType(JsonProperty property) {
-		PsiElement typeElement = findFirstChild(property, "type");
-		if (typeElement instanceof JsonProperty) {
-			return ((JsonProperty) typeElement).getValue().getText();
-		}
-
-		return "";
+	private static String findType(JsonProperty element) {
+		return PsiTreeUtil.findChildrenOfType(element.getParent(), JsonProperty.class).stream()
+			.filter(jp -> "type".equals(jp.getName()))
+			.map(jp -> strip(jp.getValue().getText(), "\""))
+			.findFirst().orElse(null);
 	}
+
+
+
 }

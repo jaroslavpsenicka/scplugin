@@ -21,7 +21,6 @@ public class DynamicCompletionContributor extends CompletionProvider<CompletionP
 	@Override
 	protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
 		String path = PsiUtils.getPath(parameters.getPosition().getParent());
-		result.addLookupAdvertisement(path);
 		List<Completion.Value> completions = ProfileComponent.getInstance().getActiveProfile().getCompletionsForPath(path);
 		if (completions != null) {
 			completions.forEach(i -> getValue(parameters, i).forEach(j -> result.addElement(
@@ -32,7 +31,7 @@ public class DynamicCompletionContributor extends CompletionProvider<CompletionP
 
 	private List<NameType> getValue(CompletionParameters parameters, Completion.Value value) {
 		if (Completion.Value.ATTRIBUTE_NAME.equalsIgnoreCase(value.getType())) {
-			return PsiUtils.getAttributes(parameters.getPosition());
+			return PsiUtils.getAttributes(parameters.getPosition(), value.getOf());
 		}
 
 		return Collections.emptyList();

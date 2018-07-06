@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.json.psi.JsonProperty;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -19,7 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class StaticCompletionContributor extends CompletionProvider<CompletionParameters> {
 
+	private static final Logger LOG = Logger.getInstance(StaticCompletionContributor.class);
 	public static final StaticCompletionContributor INSTANCE = new StaticCompletionContributor();
+
 	private final Comparator<Completion.Value> bySeverityAndName = (first, second) -> {
 		if (!first.isRequired() && second.isRequired()) return -1;
 		else if (first.isRequired() && !second.isRequired()) return 1;
@@ -29,7 +32,6 @@ public class StaticCompletionContributor extends CompletionProvider<CompletionPa
 	@Override
 	protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
 		String path = PsiUtils.getPath(parameters.getPosition().getParent());
-		result.addLookupAdvertisement(path);
 		List<Completion.Value> completions = ProfileComponent.getInstance().getActiveProfile().getCompletionsForPath(path);
 		if (completions != null) {
 			Boolean useQuotes = ProfileComponent.getInstance().useQuotes();

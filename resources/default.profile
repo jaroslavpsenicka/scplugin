@@ -18,6 +18,18 @@
             <value type="array" required="true">attributes</value>
             <value type="array" required="true">tasks</value>
         </completion>
+        <completion for="/attributes">
+            <value type="string" required="true">name</value>
+            <value type="string" required="true">type</value>
+            <value type="string">description</value>
+            <value type="enum">mapping</value>
+            <value type="string">defaultValue</value>
+        </completion>
+        <completion for="/attributes/mapping">
+            <value type="string">ACCOUNT</value>
+            <value type="string">CLIENT</value>
+            <value type="string">CLUID</value>
+        </completion>
         <completion for="/emailConfigurations">
             <value type="integer" defaultValue="100">priority</value>
             <value type="string" defaultValue="mailbox@csas.cz">mailbox</value>
@@ -27,7 +39,7 @@
             <value type="string">emailContentFieldName</value>
         </completion>
         <completion for="/emailConfigurations/emailFromFieldName">
-            <value type="attributeName"/>
+            <value type="attributeName" of="STRING"/>
         </completion>
     </completions>
 </profile>

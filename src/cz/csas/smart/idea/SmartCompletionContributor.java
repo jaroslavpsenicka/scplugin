@@ -20,7 +20,8 @@ public class SmartCompletionContributor extends CompletionContributor {
 		.afterLeaf(",")
 		.andNot(psiElement().withParent(JsonStringLiteral.class));
 	private static final PsiElementPattern.Capture<PsiElement> IN_VALUE = psiElement()
-		.withSuperParent(2, JsonProperty.class)
+		.afterLeaf(":")
+		.and(psiElement().withSuperParent(2, JsonProperty.class))
 		.and(psiElement().withParent(JsonStringLiteral.class));
 
     public SmartCompletionContributor() {

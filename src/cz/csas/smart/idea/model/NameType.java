@@ -17,4 +17,8 @@ public class NameType {
     public String getType() {
         return type;
     }
+
+	public boolean isType(String type) {
+		return type == null || type.equals(this.type);
+	}
 }

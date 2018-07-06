@@ -41,6 +41,7 @@ public class Completion {
 		private String text;
 
 		public static final String STRING = "string";
+		public static final String ENUM = "enum";
 		public static final String BOOLEAN = "boolean";
 		public static final String LONG = "long";
 		public static final String INTEGER = "integer";
