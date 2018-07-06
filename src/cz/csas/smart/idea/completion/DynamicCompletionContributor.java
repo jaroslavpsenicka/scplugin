@@ -8,6 +8,7 @@ import com.intellij.util.ProcessingContext;
 import cz.csas.smart.idea.ProfileComponent;
 import cz.csas.smart.idea.PsiUtils;
 import cz.csas.smart.idea.model.Completion;
+import cz.csas.smart.idea.model.NameType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -23,16 +24,19 @@ public class DynamicCompletionContributor extends CompletionProvider<CompletionP
 		result.addLookupAdvertisement(path);
 		List<Completion.Value> completions = ProfileComponent.getInstance().getActiveProfile().getCompletionsForPath(path);
 		if (completions != null) {
-			completions.forEach(i -> getValue(parameters, i).forEach(j -> result.addElement(LookupElementBuilder.create(j))));
+			completions.forEach(i -> getValue(parameters, i).forEach(j -> result.addElement(
+				LookupElementBuilder.create(j.getName())
+					.withBoldness(true).withTypeText(j.getType(), true))));
 		}
 	}
 
-	private List<String> getValue(CompletionParameters parameters, Completion.Value value) {
+	private List<NameType> getValue(CompletionParameters parameters, Completion.Value value) {
 		if (Completion.Value.ATTRIBUTE_NAME.equalsIgnoreCase(value.getType())) {
-			return PsiUtils.getAttributeNames(parameters.getPosition());
+			return PsiUtils.getAttributes(parameters.getPosition());
 		}
 
 		return Collections.emptyList();
 	}
+
 
 }

@@ -75,9 +75,13 @@
 
     <actions>
         <action id="smart.upload" class="cz.csas.smart.idea.UploadAction"
-            text="Upload" description="Upload to server">
+            text="Upload" description="Upload to server, with options">
             <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last"/>
             <keyboard-shortcut first-keystroke="control U" keymap="$default" replace-all="true"/>
+        </action>
+        <action id="smart.uploadFast" class="cz.csas.smart.idea.UploadFastAction"
+            text="Upload!" description="Upload to server">
+            <keyboard-shortcut first-keystroke="control shift U" keymap="$default" replace-all="true"/>
         </action>
     </actions>
 

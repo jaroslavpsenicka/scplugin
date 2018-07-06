@@ -42,6 +42,7 @@ public class StaticCompletionContributor extends CompletionProvider<CompletionPa
 					LookupElement element = LookupElementBuilder.create(key + ": " + getDefaultValue(c))
 						.withPresentableText(c.getText())
 						.withBoldness(c.isRequired())
+						.withTypeText(c.getType(), true)
 						.withInsertHandler((ctx, item) -> handleInsert(ctx, c));
 					result.addElement(PrioritizedLookupElement.withPriority(element, idx.getAndIncrement()));
 				}
@@ -50,9 +51,10 @@ public class StaticCompletionContributor extends CompletionProvider<CompletionPa
 	}
 
 	private boolean notYetUsed(Completion.Value value, PsiElement element) {
-		String fvalue = ProfileComponent.getInstance().useQuotes() ? "\"" + value.getText() + "\"" : value.getText();
-		return !PsiTreeUtil.findChildrenOfType(element.getParent().getParent(), JsonProperty.class).stream()
-			.anyMatch(p -> fvalue.equals(p.getNameElement().getText()));
+		return PsiTreeUtil.findChildrenOfType(element.getParent().getParent(), JsonProperty.class).stream()
+			.noneMatch(p -> ("\"" + value.getText() + "\"").equals(p.getNameElement().getText()))
+		&& PsiTreeUtil.findChildrenOfType(element.getParent().getParent(), JsonProperty.class).stream()
+			.noneMatch(p -> (value.getText()).equals(p.getNameElement().getText()));
 	}
 
 	@NotNull
