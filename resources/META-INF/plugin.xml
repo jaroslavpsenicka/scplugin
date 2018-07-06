@@ -23,7 +23,7 @@
     -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationConfigurable groupId="root" instance="cz.csas.smart.idea.SmartCaseConfigurable"/>
+        <applicationConfigurable groupId="tools" instance="cz.csas.smart.idea.SmartCaseConfigurable"/>
         <fileTypeFactory implementation="cz.csas.smart.idea.SmartFileTypeFactory"/>
         <lang.parserDefinition language="JSON" implementationClass="com.intellij.json.JsonParserDefinition"/>
         <lang.syntaxHighlighterFactory language="JSON" implementationClass="com.intellij.json.highlighting.JsonSyntaxHighlighterFactory"/>
