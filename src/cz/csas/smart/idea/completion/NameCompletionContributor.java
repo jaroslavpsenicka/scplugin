@@ -18,10 +18,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class StaticCompletionContributor extends CompletionProvider<CompletionParameters> {
+public class NameCompletionContributor extends CompletionProvider<CompletionParameters> {
 
-	private static final Logger LOG = Logger.getInstance(StaticCompletionContributor.class);
-	public static final StaticCompletionContributor INSTANCE = new StaticCompletionContributor();
+	private static final Logger LOG = Logger.getInstance(NameCompletionContributor.class);
+	public static final NameCompletionContributor INSTANCE = new NameCompletionContributor();
 
 	private final Comparator<Completion.Value> bySeverityAndName = (first, second) -> {
 		if (!first.isRequired() && second.isRequired()) return -1;
@@ -44,7 +44,7 @@ public class StaticCompletionContributor extends CompletionProvider<CompletionPa
 					LookupElement element = LookupElementBuilder.create(key + ": " + getDefaultValue(c))
 						.withPresentableText(c.getText())
 						.withBoldness(c.isRequired())
-						.withTypeText(c.getType(), true)
+						.withTypeText(c.getNotes() != null ? c.getNotes() : c.getType(), true)
 						.withInsertHandler((ctx, item) -> handleInsert(ctx, c));
 					result.addElement(PrioritizedLookupElement.withPriority(element, idx.getAndIncrement()));
 				}

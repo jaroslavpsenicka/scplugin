@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
-public class DynamicCompletionContributor extends CompletionProvider<CompletionParameters> {
+public class ValueCompletionContributor extends CompletionProvider<CompletionParameters> {
 
-	public static final DynamicCompletionContributor INSTANCE = new DynamicCompletionContributor();
+	public static final ValueCompletionContributor INSTANCE = new ValueCompletionContributor();
 
 	@Override
 	protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
@@ -32,6 +32,8 @@ public class DynamicCompletionContributor extends CompletionProvider<CompletionP
 	private List<NameType> getValue(CompletionParameters parameters, Completion.Value value) {
 		if (Completion.Value.ATTRIBUTE_NAME.equalsIgnoreCase(value.getType())) {
 			return PsiUtils.getAttributes(parameters.getPosition(), value.getOf());
+		} else if (Completion.Value.ENUM.equalsIgnoreCase(value.getType())) {
+			return Collections.singletonList(new NameType(value.getText(), value.getNotes()));
 		}
 
 		return Collections.emptyList();

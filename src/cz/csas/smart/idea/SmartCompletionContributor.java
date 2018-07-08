@@ -6,8 +6,8 @@ import com.intellij.json.psi.JsonProperty;
 import com.intellij.json.psi.JsonStringLiteral;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
-import cz.csas.smart.idea.completion.DynamicCompletionContributor;
-import cz.csas.smart.idea.completion.StaticCompletionContributor;
+import cz.csas.smart.idea.completion.ValueCompletionContributor;
+import cz.csas.smart.idea.completion.NameCompletionContributor;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
@@ -25,9 +25,9 @@ public class SmartCompletionContributor extends CompletionContributor {
 		.and(psiElement().withParent(JsonStringLiteral.class));
 
     public SmartCompletionContributor() {
-	    this.extend(CompletionType.BASIC, AFTER_CURLYBRACE, StaticCompletionContributor.INSTANCE);
-	    this.extend(CompletionType.BASIC, AFTER_COMMA, StaticCompletionContributor.INSTANCE);
-	    this.extend(CompletionType.BASIC, IN_VALUE, DynamicCompletionContributor.INSTANCE);
+	    this.extend(CompletionType.BASIC, AFTER_CURLYBRACE, NameCompletionContributor.INSTANCE);
+	    this.extend(CompletionType.BASIC, AFTER_COMMA, NameCompletionContributor.INSTANCE);
+	    this.extend(CompletionType.BASIC, IN_VALUE, ValueCompletionContributor.INSTANCE);
     }
 
 }

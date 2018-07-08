@@ -22,19 +22,26 @@
             <value type="string" required="true">name</value>
             <value type="string" required="true">type</value>
             <value type="string">description</value>
-            <value type="enum">mapping</value>
+            <value type="string">mapping</value>
             <value type="string">defaultValue</value>
+            <value type="string">validationExpression</value>
         </completion>
         <completion for="/attributes/mapping">
-            <value type="string">ACCOUNT</value>
-            <value type="string">CLIENT</value>
-            <value type="string">CLUID</value>
+            <value type="enum">LIST</value>
+            <value type="enum">MAP</value>
+            <value type="enum">STRING</value>
+        </completion>
+        <completion for="/attributes/type">
+            <value type="enum">LIST</value>
+            <value type="enum" notes="data structure">MAP</value>
+            <value type="enum" notes="short text">STRING</value>
+            <value type="enum" notes="longer piece of text">TEXT</value>
         </completion>
         <completion for="/emailConfigurations">
             <value type="integer" defaultValue="100">priority</value>
             <value type="string" defaultValue="mailbox@csas.cz">mailbox</value>
             <value type="boolean" defaultValue="true">expression</value>
-            <value type="string">emailFromFieldName</value>
+            <value type="string" notes="email sender">emailFromFieldName</value>
             <value type="string">emailSubjectFieldName</value>
             <value type="string">emailContentFieldName</value>
         </completion>

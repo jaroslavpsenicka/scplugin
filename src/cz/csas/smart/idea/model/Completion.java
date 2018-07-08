@@ -37,6 +37,7 @@ public class Completion {
 		private String type;
 		private boolean required;
 		private String defaultValue;
+		private String notes;
 		private String of;
 		private String text;
 
@@ -68,6 +69,10 @@ public class Completion {
 
 		public String getText() {
 			return text;
+		}
+
+		public String getNotes() {
+			return notes;
 		}
 
 		public String toString() {
