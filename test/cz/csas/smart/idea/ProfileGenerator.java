@@ -52,9 +52,9 @@ public class ProfileGenerator {
     }
 
     private Completion createCompletion(String path, Object object) {
-        if (object instaceof Field) {
+        if (object instanceof Field) {
 
-        } else if (bject instanceof Class) {
+        } else if (object instanceof Class) {
 
         }
 
