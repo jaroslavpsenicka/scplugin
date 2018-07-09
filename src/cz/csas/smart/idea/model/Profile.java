@@ -28,7 +28,7 @@ public class Profile {
 		readStream(stream);
 	}
 
-	public Profile(String path) throws IOException {
+	public Profile(String path, List<Completion> completions) throws IOException {
 		this.path = path;
 		try (InputStream stream = new FileInputStream(new File(path))) {
 			readStream(stream);
@@ -95,9 +95,17 @@ public class Profile {
 		this.completionMap = profile.getCompletionMap();
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setCompletions(List<Completion> completions) {
+		this.completions = completions;
+		this.completionMap = this.getCompletionMap();
+	}
+
 	public String toString() {
 		return name + ((description != null) ? " (" + description + ")" : "");
 	}
-
 
 }
