@@ -24,11 +24,16 @@ public class Profile {
 	private List<Completion> completions = new ArrayList<>();
 	private Map<String, List<Completion.Value>> completionMap;
 
+	public Profile(String name, List<Completion> completions) {
+		this.name = name;
+		this.completions = completions;
+	}
+
 	public Profile(InputStream stream) {
 		readStream(stream);
 	}
 
-	public Profile(String path, List<Completion> completions) throws IOException {
+	public Profile(String path) throws IOException {
 		this.path = path;
 		try (InputStream stream = new FileInputStream(new File(path))) {
 			readStream(stream);
