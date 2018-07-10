@@ -62,7 +62,13 @@ public class ProfileGenerator {
             .map(this::logField)
             .forEach(f -> fieldMap.put(path + "/" + f.getName(), f));
 
-        // custom fields
+	    // enums
+	    listFields(aClass).stream()
+		    .filter(f -> f.getType().isEnum())
+		    .map(this::logField)
+		    .forEach(f -> fieldMap.put(path + "/" + f.getName(), f));
+
+	    // custom fields
         listFields(aClass).stream()
             .filter(f -> !"class".equals(f.getName()))
             .filter(f -> !f.getType().isPrimitive())
