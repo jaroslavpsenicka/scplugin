@@ -43,7 +43,7 @@ public class ProfileGenerator {
         String aPkg = aClass.getPackage().getName();
 
         // basic fields
-        Arrays.stream(aClass.getDeclaredFields())
+        listFields(aClass).stream()
             .filter(f -> !"class".equals(f.getName()))
             .filter(f -> !"serialVersionUID".equals(f.getName()))
             .filter(f -> f.getType().isPrimitive() || FIELD_TYPES.contains(f.getType()))
@@ -51,7 +51,7 @@ public class ProfileGenerator {
             .forEach(f -> fieldMap.put(path + "/" + f.getName(), f));
 
         // custom fields
-        Arrays.stream(aClass.getDeclaredFields())
+        listFields(aClass).stream()
             .filter(f -> !"class".equals(f.getName()))
             .filter(f -> !f.getType().isPrimitive())
             .filter(f -> !f.getType().isEnum())
@@ -60,13 +60,23 @@ public class ProfileGenerator {
             .forEach(f -> collectFields(f.getType(), path + "/" + f.getName()));
 
         // collections
-        Arrays.stream(aClass.getDeclaredFields())
+        listFields(aClass).stream()
             .filter(f -> !"class".equals(f.getType().getName()))
             .filter(f -> !f.getType().isPrimitive())
             .filter(f -> !f.getType().isEnum())
             .filter(f -> f.getType().getPackage() != null && f.getType().getPackage().getName().startsWith("java.util"))
             .map(this::logField)
             .forEach(f -> collectFields(extractGenericType(f), path + "/" + f.getName()));
+    }
+
+    private List<Field> listFields(Class aClass) {
+        List<Field> fields = new ArrayList<>();
+        do {
+            fields.addAll(Arrays.asList(aClass.getDeclaredFields()));
+            aClass = aClass.getSuperclass();
+        } while (aClass != null);
+
+        return fields;
     }
 
     private Field logField(Field f) {
