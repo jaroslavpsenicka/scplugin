@@ -2,13 +2,16 @@ package cz.csas.smart.idea;
 
 import cz.csas.smart.idea.model.Completion;
 import cz.csas.smart.idea.model.Profile;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.lang.reflect.ParameterizedType;
 
 public class ProfileGenerator {
 
@@ -19,9 +22,16 @@ public class ProfileGenerator {
         add(Integer.class);
         add(Boolean.class);
         add(Long.class);
+        add(Date.class);
     }};
 
-    public static void main(String[] args) throws ClassNotFoundException, IOException {
+	private Comparator<Completion.Value> byFieldNameRequiredFirst = (field1, field2) -> {
+		return !field1.required() && field2.required() ? 1 :
+			field1.required() && !field2.required() ? -1 :
+			field1.getText().compareTo(field2.getText());
+	};
+
+	public static void main(String[] args) throws ClassNotFoundException, IOException {
         ProfileGenerator pg = new ProfileGenerator();
         Profile profile = pg.generate(args[0], Class.forName(args[1]));
         new ProfilePrinter().print(profile);
@@ -29,18 +39,20 @@ public class ProfileGenerator {
 
     private Profile generate(String name, Class baseClass) throws IOException {
         collectFields(baseClass, "");
-        return new Profile(name, createCompletions());
+        return new Profile(name, this.fieldMap.keySet().stream()
+	        .sorted()
+	        .map(path -> createCompletion(path, fieldMap.get(path)))
+	        .collect(Collectors.toList()));
     }
 
     private void collectFields(Class aClass, String path) {
         System.out.println("Processing " + aClass + " as " + path);
-        fieldMap.put(path + "/", aClass);
+	    if (FIELD_TYPES.contains(aClass)) {
+		    return;
+	    }
 
-        if (FIELD_TYPES.contains(aClass)) {
-            return;
-        }
-
-        String aPkg = aClass.getPackage().getName();
+	    fieldMap.put(path, aClass);
+	    String aPkg = aClass.getPackage().getName();
 
         // basic fields
         listFields(aClass).stream()
@@ -93,20 +105,40 @@ public class ProfileGenerator {
         return (Class) type;
     }
 
-    private List<Completion> createCompletions() {
-        return this.fieldMap.keySet().stream()
-            .map(path -> createCompletion(path, fieldMap.get(path)))
-            .collect(Collectors.toList());
-    }
-
     private Completion createCompletion(String path, Object object) {
         if (object instanceof Field) {
-
+        	Field field = (Field) object;
+        	if (field.getType().isEnum()) {
+				return new Completion(path, Arrays.stream(field.getType().getEnumConstants())
+					.map(e -> new Completion.Value(Completion.Value.ENUM, e.toString()))
+					.collect(Collectors.toList()));
+	        }
         } else if (object instanceof Class) {
-
+	        return new Completion(path, listFields((Class) object).stream()
+		        .filter(f -> !"class".equals(f.getName()))
+		        .filter(f -> !"serialVersionUID".equals(f.getName()))
+		        .map(f -> createValue(f))
+		        .sorted(byFieldNameRequiredFirst)
+		        .collect(Collectors.toList()));
         }
 
-        return null;
+        return new Completion(path, Collections.emptyList());
     }
+
+	private Completion.Value createValue(Field field) {
+		Completion.Value value = new Completion.Value(createType(field.getType()), field.getName());
+		value.setRequired((field.getAnnotation(NotNull.class) != null || field.getAnnotation(NotEmpty.class) != null) ? true : null);
+		value.setDefaultValue(field.getAnnotation(Min.class) != null ? String.valueOf(field.getAnnotation(Min.class).value()) : null);
+		return value;
+	}
+
+	private String createType(Class fieldType) {
+		return String.class.equals(fieldType) ? Completion.Value.STRING :
+			Boolean.class.equals(fieldType) ? Completion.Value.BOOLEAN :
+			Long.class.equals(fieldType) ? Completion.Value.LONG :
+			Integer.class.equals(fieldType) ? Completion.Value.INTEGER :
+			Collection.class.isAssignableFrom(fieldType) ? Completion.Value.ARRAY :
+			Completion.Value.OBJECT;
+	}
 
 }

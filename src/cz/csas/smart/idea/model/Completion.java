@@ -18,6 +18,14 @@ public class Completion {
 	@XStreamImplicit
 	private List<Value> value;
 
+	public Completion() {
+	}
+
+	public Completion(String path, List<Value> collect) {
+		this.key = path;
+		this.value = collect;
+	}
+
 	public String getKey() {
 		return key;
 	}
@@ -35,7 +43,7 @@ public class Completion {
 	public static class Value {
 
 		private String type;
-		private boolean required;
+		private Boolean required;
 		private String defaultValue;
 		private String notes;
 		private String of;
@@ -51,16 +59,35 @@ public class Completion {
 
 		public static final String ATTRIBUTE_NAME = "attributeName";
 
+		public Value() {}
+
+		public Value(String type, String text) {
+			this.type = type;
+			this.text = text;
+		}
+
 		public String getType() {
 			return type;
 		}
 
-		public boolean isRequired() {
+		public boolean required() {
+			return required == Boolean.TRUE;
+		}
+
+		public Boolean isRequired() {
 			return required;
+		}
+
+		public void setRequired(Boolean required) {
+			this.required = required;
 		}
 
 		public String getDefaultValue() {
 			return defaultValue;
+		}
+
+		public void setDefaultValue(String defaultValue) {
+			this.defaultValue = defaultValue;
 		}
 
 		public String getOf() {

@@ -13,5 +13,6 @@
     <orderEntry type="library" name="core-0.0.17-SNAPSHOT" level="project" />
     <orderEntry type="library" name="design-api-0.0.17-SNAPSHOT" level="project" />
     <orderEntry type="library" name="javax.validation:validation-api:1.1.0.Final" level="project" />
+    <orderEntry type="library" name="hibernate-validator-5.2.4.Final" level="project" />
   </component>
 </module>
