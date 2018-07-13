@@ -37,6 +37,11 @@ public class PsiUtils {
 		return PsiTreeUtil.getParentOfType(element, JsonFile.class);
 	}
 
+	public static PsiElement findTaskRoot(PsiElement element) {
+		JsonProperty topmostProperty = PsiTreeUtil.getTopmostParentOfType(element, JsonProperty.class);
+		return topmostProperty != null ? topmostProperty.getParent() : null;
+	}
+
 	public static List<NameType> getAttributes(PsiElement element, String ofType) {
 		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
 			.filter(jp -> "attributes".equals(jp.getName()))
@@ -45,7 +50,7 @@ public class PsiUtils {
 			JsonProperty attributesElement = attributesProperty.get();
 			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
 				.filter(jp -> "name".equals(jp.getName()))
-				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findType(jp)))
+				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findAttributeType(jp)))
 				.filter(nt -> nt.isType(ofType))
 				.collect(Collectors.toList());
 		}
@@ -53,13 +58,56 @@ public class PsiUtils {
 		return Collections.emptyList();
 	}
 
-	private static String findType(JsonProperty element) {
+	public static List<NameType> getActivities(PsiElement element) {
+		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findTaskRoot(element), JsonProperty.class).stream()
+			.filter(jp -> "activities".equals(jp.getName()))
+			.findFirst();
+		if (attributesProperty.isPresent()) {
+			JsonProperty attributesElement = attributesProperty.get();
+			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
+				.filter(jp -> "name".equals(jp.getName()))
+				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), null))
+				.collect(Collectors.toList());
+		}
+
+		return Collections.emptyList();
+	}
+
+	public static List<NameType> getTasks(PsiElement element, String ofType) {
+		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
+			.filter(jp -> "tasks".equals(jp.getName()))
+			.findFirst();
+		if (attributesProperty.isPresent()) {
+			JsonProperty attributesElement = attributesProperty.get();
+			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
+				.filter(jp -> "name".equals(jp.getName()))
+				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
+				.filter(nt -> nt.isType(ofType))
+				.collect(Collectors.toList());
+		}
+
+		return Collections.emptyList();
+	}
+
+	private static String findAttributeType(JsonProperty element) {
 		return PsiTreeUtil.findChildrenOfType(element.getParent(), JsonProperty.class).stream()
 			.filter(jp -> "type".equals(jp.getName()))
 			.map(jp -> strip(jp.getValue().getText(), "\""))
 			.findFirst().orElse(null);
 	}
 
+	private static String findTaskType(JsonProperty element) {
+		Optional<String> at = PsiTreeUtil.findChildrenOfType(element.getParent(), JsonProperty.class).stream()
+			.filter(jp -> "runners".equals(jp.getName()))
+			.map(jp -> strip(jp.getValue().getText(), "\""))
+			.findFirst();
+		Optional<String> ct = PsiTreeUtil.findChildrenOfType(element.getParent(), JsonProperty.class).stream()
+			.filter(jp -> "clientConfigurations".equals(jp.getName()))
+			.map(jp -> strip(jp.getValue().getText(), "\""))
+			.findFirst();
+
+		return at.isPresent() ? "AT" : ct.isPresent()? "CT" : "HT";
+	}
 
 
 }

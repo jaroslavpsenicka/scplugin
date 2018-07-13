@@ -58,6 +58,8 @@ public class Completion {
 		public static final String ARRAY = "array";
 
 		public static final String ATTRIBUTE_NAME = "attributeName";
+		public static final String ACTIVITY_NAME = "activityName";
+		public static final String TASK_NAME = "taskName";
 
 		public Value() {}
 

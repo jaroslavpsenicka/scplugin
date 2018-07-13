@@ -32,6 +32,10 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 	private List<NameType> getValue(CompletionParameters parameters, Completion.Value value) {
 		if (Completion.Value.ATTRIBUTE_NAME.equalsIgnoreCase(value.getType())) {
 			return PsiUtils.getAttributes(parameters.getPosition(), value.getOf());
+		} else if (Completion.Value.ACTIVITY_NAME.equalsIgnoreCase(value.getType())) {
+			return PsiUtils.getActivities(parameters.getPosition());
+		} else if (Completion.Value.TASK_NAME.equalsIgnoreCase(value.getType())) {
+			return PsiUtils.getTasks(parameters.getPosition(), value.getOf());
 		} else if (Completion.Value.ENUM.equalsIgnoreCase(value.getType())) {
 			return Collections.singletonList(new NameType(value.getText(), value.getNotes()));
 		}
