@@ -6,6 +6,8 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @XStreamAlias("completion")
@@ -31,7 +33,7 @@ public class Completion {
 	}
 
 	public List<Value> getValue() {
-		return value;
+		return value != null ? value : Collections.emptyList();
 	}
 
 	public void addValue(Value value) {

@@ -24,7 +24,8 @@ public class NameCompletionContributor extends CompletionProvider<CompletionPara
 	public static final NameCompletionContributor INSTANCE = new NameCompletionContributor();
 
 	private final Comparator<Completion.Value> bySeverityAndName = (first, second) -> {
-		if (!first.isRequired() && second.isRequired()) return -1;
+		if (first == null || second == null) return 0;
+		else if (!first.isRequired() && second.isRequired()) return -1;
 		else if (first.isRequired() && !second.isRequired()) return 1;
 		else return second.getText().compareTo(first.getText());
 	};

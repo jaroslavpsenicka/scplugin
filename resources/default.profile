@@ -132,7 +132,9 @@
     <completion for="/emailConfigurations/emailFromFieldName">
       <value type="attributeName" of="STRING"/>
 	</completion>
-    <completion for="/emailConfigurations/emailSubjectFieldName"/>
+    <completion for="/emailConfigurations/emailSubjectFieldName">
+      <value type="attributeName" of="STRING"/>
+    </completion>
     <completion for="/emailConfigurations/expression"/>
     <completion for="/emailConfigurations/mailbox"/>
     <completion for="/emailConfigurations/priority"/>
