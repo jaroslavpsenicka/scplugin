@@ -18,6 +18,10 @@ public class Completion {
 	@XStreamAsAttribute
 	private String key;
 
+	@XStreamAlias("ref")
+	@XStreamAsAttribute
+	private String ref;
+
 	@XStreamImplicit
 	private List<Value> value;
 
@@ -33,15 +37,25 @@ public class Completion {
 		return key;
 	}
 
+	public String getRef() {
+		return ref;
+	}
+
 	public List<Value> getValue() {
 		return value != null ? value : Collections.emptyList();
 	}
 
-	public void addValue(Value value) {
-		this.value.add(value);
+	public void addValue(List<Value> value) {
+		if (this.value != null && this.value.size() > 0) {
+			// TODO copy
+		} else this.value = value;
 	}
 
-	@XStreamAlias("value")
+	public void setValue(List<Value> value) {
+		this.value = value;
+	}
+
+    @XStreamAlias("value")
 	@XStreamConverter(value = ToAttributedValueConverter.class, strings = {"text"})
 	public static class Value {
 

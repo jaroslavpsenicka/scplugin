@@ -3,6 +3,7 @@ package cz.csas.smart.idea.model;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -82,8 +83,12 @@ public class Profile {
 		}
 	}
 
-	private Map<String, List<Completion.Value>> getCompletionMap() {
-		return completions.stream().collect(Collectors.toMap(Completion::getKey, Completion::getValue));
+	private void processCompletions() {
+		this.completionMap = completions.stream().collect(Collectors.toMap(Completion::getKey, Completion::getValue));
+		this.completions.stream()
+			.filter(c -> StringUtils.isNotEmpty(c.getRef()))
+			.filter(c -> this.completionMap.containsKey(c.getRef()))
+			.forEach(c -> c.addValue(this.completionMap.get(c.getRef())));
 	}
 
 	private void readStream(InputStream stream) {
@@ -97,7 +102,7 @@ public class Profile {
 		Profile profile = (Profile) xstream.fromXML(stream);
 		this.name = profile.getName();
 		this.description = profile.getDescription();
-		this.completionMap = profile.getCompletionMap();
+		this.processCompletions();
 	}
 
 	public void setName(String name) {
@@ -106,7 +111,7 @@ public class Profile {
 
 	public void setCompletions(List<Completion> completions) {
 		this.completions = completions;
-		this.completionMap = this.getCompletionMap();
+		this.processCompletions();
 	}
 
 	public String toString() {
