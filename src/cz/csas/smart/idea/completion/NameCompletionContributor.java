@@ -24,8 +24,9 @@ public class NameCompletionContributor extends CompletionProvider<CompletionPara
 	public static final NameCompletionContributor INSTANCE = new NameCompletionContributor();
 
 	private final Comparator<Completion.Value> bySeverityAndName = (first, second) -> {
-		if (!first.isRequired() && second.isRequired()) return -1;
-		else if (first.isRequired() && !second.isRequired()) return 1;
+		if (first == null || second == null) return 0;
+		else if (!first.required() && second.required()) return -1;
+		else if (first.required() && !second.required()) return 1;
 		else return second.getText().compareTo(first.getText());
 	};
 
@@ -43,7 +44,8 @@ public class NameCompletionContributor extends CompletionProvider<CompletionPara
 					String key = useQuotes ? ("\"" + c + "\"") : c.getText();
 					LookupElement element = LookupElementBuilder.create(key + ": " + getDefaultValue(c))
 						.withPresentableText(c.getText())
-						.withBoldness(c.isRequired())
+						.withBoldness(c.required())
+						.withIcon(c.icon())
 						.withTypeText(c.getNotes() != null ? c.getNotes() : c.getType(), true)
 						.withInsertHandler((ctx, item) -> handleInsert(ctx, c));
 					result.addElement(PrioritizedLookupElement.withPriority(element, idx.getAndIncrement()));

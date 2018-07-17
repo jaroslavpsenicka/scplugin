@@ -1,11 +1,14 @@
 package cz.csas.smart.idea.model;
 
+import com.intellij.openapi.util.IconLoader;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
 
+import javax.swing.*;
+import java.util.Collections;
 import java.util.List;
 
 @XStreamAlias("completion")
@@ -31,7 +34,7 @@ public class Completion {
 	}
 
 	public List<Value> getValue() {
-		return value;
+		return value != null ? value : Collections.emptyList();
 	}
 
 	public void addValue(Value value) {
@@ -47,6 +50,7 @@ public class Completion {
 		private String defaultValue;
 		private String notes;
 		private String of;
+		private String icon;
 		private String text;
 
 		public static final String STRING = "string";
@@ -76,7 +80,7 @@ public class Completion {
 			return required == Boolean.TRUE;
 		}
 
-		public Boolean isRequired() {
+		public boolean isRequired() {
 			return required;
 		}
 
@@ -104,8 +108,17 @@ public class Completion {
 			return notes;
 		}
 
+		public String getIcon() {
+			return icon;
+		}
+
 		public String toString() {
 			return text;
+		}
+
+		public Icon icon() {
+			return icon != null && icon.length() > 0 ?
+				IconLoader.getIcon("/nodes/" + icon + ".png") : null;
 		}
 	}
 }
