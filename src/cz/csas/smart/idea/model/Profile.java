@@ -23,7 +23,7 @@ public class Profile {
 	private String name;
 	private String description;
 	private List<Completion> completions = new ArrayList<>();
-	private Map<String, List<Completion.Value>> completionMap;
+	private Map<String, Completion> completionMap;
 
 	public Profile(String name, List<Completion> completions) {
 		this.name = name;
@@ -67,7 +67,7 @@ public class Profile {
 	}
 
 	public List<Completion.Value> getCompletionsForPath(String path) {
-		return completionMap.get(path);
+		return completionMap.containsKey(path) ? completionMap.get(path).getValues() : null;
 	}
 
 	public boolean canReload() {
@@ -83,12 +83,20 @@ public class Profile {
 		}
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String toString() {
+		return name + ((description != null) ? " (" + description + ")" : "");
+	}
+
 	private void processCompletions() {
-		this.completionMap = completions.stream().collect(Collectors.toMap(Completion::getKey, Completion::getValue));
+		this.completionMap = completions.stream().collect(Collectors.toMap(Completion::getKey, c -> c));
 		this.completions.stream()
 			.filter(c -> StringUtils.isNotEmpty(c.getRef()))
 			.filter(c -> this.completionMap.containsKey(c.getRef()))
-			.forEach(c -> c.addValue(this.completionMap.get(c.getRef())));
+			.forEach(c -> c.setValues(this.completionMap.get(c.getRef()).getValues()));
 	}
 
 	private void readStream(InputStream stream) {
@@ -102,20 +110,8 @@ public class Profile {
 		Profile profile = (Profile) xstream.fromXML(stream);
 		this.name = profile.getName();
 		this.description = profile.getDescription();
+		this.completions = profile.getCompletions();
 		this.processCompletions();
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setCompletions(List<Completion> completions) {
-		this.completions = completions;
-		this.processCompletions();
-	}
-
-	public String toString() {
-		return name + ((description != null) ? " (" + description + ")" : "");
 	}
 
 }

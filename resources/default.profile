@@ -31,6 +31,7 @@
             <value type="string">uniqueHashAttributesExpression</value>
             <value type="object">validationType</value>
         </completion>
+
         <completion for="/attributes">
             <value type="string" required="true" notes="jméno atributu">name</value>
             <value type="object" required="true" notes="datový typ">type</value>
@@ -85,6 +86,7 @@
             <value type="enum">LIST</value>
             <value type="enum">MAP</value>
         </completion>
+
         <completion for="/configurations">
             <value type="string">condition</value>
             <value type="object">estimatedCompletionDate</value>
@@ -104,19 +106,20 @@
             <value type="enum" notes="pracovní dny (pátek -> pondělí)">LABOURUNIT</value>
             <value type="enum" notes="kalendářní dny (pátek -> sobota)">CALENDARUNIT</value>
         </completion>
+
         <completion for="/createDate"/>
         <completion for="/createdBy"/>
-        <completion for="/description"/>
         <completion for="/domain"/>
+
         <completion for="/emailConfigurations">
             <value type="string">attachmentRecordType</value>
             <value type="string">bodyRecordType</value>
             <value type="object">documentRepository</value>
-            <value type="string">emailContentFieldName</value>
-            <value type="string" notes="attr pro ulozeni odesilatele">emailFromFieldName</value>
-            <value type="string">emailSubjectFieldName</value>
-            <value type="boolean" defaultValue="true">expression</value>
-            <value type="string" defaultValue="mailbox@csas.cz">mailbox</value>
+            <value type="string" notes="attr pro ulozeni těla zprávy" icon="css/atrule">emailContentFieldName</value>
+            <value type="string" notes="attr pro ulozeni odesilatele" icon="css/atrule">emailFromFieldName</value>
+            <value type="string" notes="attr pro ulozeni předmětu zprávy" icon="css/atrule">emailSubjectFieldName</value>
+            <value type="boolean" notes="podmínka pro " icon="nodes/enum" defaultValue="true">expression</value>
+            <value type="string" notes="schránka příchozí pošty" defaultValue="mailbox@csas.cz">mailbox</value>
             <value type="integer" defaultValue="100">priority</value>
         </completion>
         <completion for="/emailConfigurations/attachmentRecordType"/>
@@ -128,29 +131,27 @@
             <value type="enum">DS_ATTACHMENT</value>
             <value type="enum">CEM</value>
         </completion>
-        <completion for="/emailConfigurations/emailContentFieldName"/>
+        <completion for="/emailConfigurations/emailContentFieldName">
+            <value type="attributeName" of="STRING"/>
+        </completion>
         <completion for="/emailConfigurations/emailFromFieldName">
             <value type="attributeName" of="STRING"/>
         </completion>
         <completion for="/emailConfigurations/emailSubjectFieldName">
             <value type="attributeName" of="STRING"/>
         </completion>
-        <completion for="/emailConfigurations/expression"/>
-        <completion for="/emailConfigurations/mailbox"/>
-        <completion for="/emailConfigurations/priority"/>
+
         <completion for="/expressions">
-            <value type="string" required="true">name</value>
-            <value type="string">description</value>
-            <value type="string">expression</value>
-            <value type="object">type</value>
+            <value type="string" notes="technické jméno výrazu" required="true">name</value>
+            <value type="string" notes="popis výrazu (dokumentace)">description</value>
+            <value type="string" notes="text výrazu" icon="nodes/enum">expression</value>
+            <value type="string" notes="typ výrazu">type</value>
         </completion>
-        <completion for="/expressions/description"/>
-        <completion for="/expressions/expression"/>
-        <completion for="/expressions/name"/>
         <completion for="/expressions/type">
-            <value type="enum">PLAIN</value>
-            <value type="enum">MATH</value>
+            <value type="enum" notes="výraz JS">PLAIN</value>
+            <value type="enum" notes="výraz MATH.JS">MATH</value>
         </completion>
+
         <completion for="/header">
             <value type="array">items</value>
         </completion>
@@ -874,21 +875,19 @@
         <completion for="/tasks/configurations/calendarId"/>
         <completion for="/tasks/configurations/condition"/>
         <completion for="/tasks/configurations/dueDate">
-            <value type="object" required="true">duration</value>
+            <value type="string" required="true">duration</value>
             <value type="object" required="true">unit</value>
             <value type="string">expression</value>
             <value type="object">type</value>
         </completion>
+        <completion for="/tasks/configurations/dueDate/duration" ref="/configurations/estimatedCompletionDate/duration"/>
         <completion for="/tasks/configurations/dueDate/expression"/>
         <completion for="/tasks/configurations/dueDate/type">
             <value type="enum">NOW</value>
             <value type="enum">END</value>
             <value type="enum">PATTERN</value>
         </completion>
-        <completion for="/tasks/configurations/dueDate/unit">
-            <value type="enum">LABOURUNIT</value>
-            <value type="enum">CALENDARUNIT</value>
-        </completion>
+        <completion for="/tasks/configurations/dueDate/unit" ref="/configurations/estimatedCompletionDate/unit"/>
         <completion for="/tasks/configurations/earliestAssigningDate">
             <value type="object" required="true">duration</value>
             <value type="object" required="true">unit</value>

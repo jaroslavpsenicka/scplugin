@@ -23,14 +23,14 @@ public class Completion {
 	private String ref;
 
 	@XStreamImplicit
-	private List<Value> value;
+	private List<Value> values;
 
 	public Completion() {
 	}
 
 	public Completion(String path, List<Value> collect) {
 		this.key = path;
-		this.value = collect;
+		this.values = collect;
 	}
 
 	public String getKey() {
@@ -41,18 +41,12 @@ public class Completion {
 		return ref;
 	}
 
-	public List<Value> getValue() {
-		return value != null ? value : Collections.emptyList();
+	public List<Value> getValues() {
+		return values != null ? values : Collections.emptyList();
 	}
 
-	public void addValue(List<Value> value) {
-		if (this.value != null && this.value.size() > 0) {
-			// TODO copy
-		} else this.value = value;
-	}
-
-	public void setValue(List<Value> value) {
-		this.value = value;
+	public void setValues(List<Value> values) {
+		this.values = values;
 	}
 
     @XStreamAlias("value")
