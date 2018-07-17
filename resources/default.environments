@@ -1,6 +1,6 @@
 <environments>
+    <environment name="INT (almost ready)">http://smart-int.csint.cz/smart</environment>
     <environment name="DEVA (latest greatest)">http://smart-deva.csint.cz/smart</environment>
     <environment name="DEVC (experimental)">http://smart-devc.csint.cz/smart</environment>
-    <environment name="INT (almost ready)">http://smart-int.csint.cz/smart</environment>
     <environment name="PRS (production support)">http://smart-prs.csint.cz/smart</environment>
 </environments>
