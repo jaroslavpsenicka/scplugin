@@ -3,8 +3,9 @@ package cz.csas.smart.idea.completion;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.json.psi.JsonProperty;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import cz.csas.smart.idea.EnvironmentComponent;
@@ -14,7 +15,6 @@ import cz.csas.smart.idea.SmartCaseAPIClient;
 import cz.csas.smart.idea.model.Completion;
 import cz.csas.smart.idea.model.EditorDef;
 import cz.csas.smart.idea.model.NameType;
-import cz.csas.smart.idea.model.PropertyDef;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class ValueCompletionContributor extends CompletionProvider<CompletionParameters> {
@@ -38,13 +39,20 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 		String path = PsiUtils.getPath(parameters.getPosition().getParent());
 		List<Completion.Value> completions = ProfileComponent.getInstance().getActiveProfile().getCompletionsForPath(path);
 		if (completions != null) {
+			AtomicInteger idx = new AtomicInteger(0);
 			completions.forEach(i -> getValue(parameters, i)
-				.forEach(j -> result.addElement(
-					LookupElementBuilder.create(j.getName())
-						.withBoldness(j.important())
-						.withTypeText(j.getType(), true)
-			)));
+				.forEach(j -> result.addElement(PrioritizedLookupElement.withPriority(
+					createElement(j), idx.getAndIncrement())))
+			);
 		}
+	}
+
+	@NotNull
+	private LookupElement createElement(NameType type) {
+		return LookupElementBuilder.create(type.getName())
+			.withPresentableText(type.getName())
+			.withBoldness(type.important())
+			.withTypeText(type.getType(), true);
 	}
 
 	private List<NameType> getValue(CompletionParameters parameters, Completion.Value value) {

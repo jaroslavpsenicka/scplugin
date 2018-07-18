@@ -5,7 +5,6 @@ import com.intellij.json.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import cz.csas.smart.idea.model.NameType;
-import cz.csas.smart.idea.model.PropertyDef;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,9 +18,9 @@ public class PsiUtils {
 
 	public static final Comparator<NameType> bySeverityAndName = (first, second) -> {
 		if (first == null || second == null) return 0;
-		else if (first.important() && !second.important()) return -1;
-		else if (!first.important() && second.important()) return 1;
-		else return first.getName().compareTo(second.getName());
+		else if (!first.important() && second.important()) return -1;
+		else if (first.important() && !second.important()) return 1;
+		else return second.getName().compareTo(first.getName());
 	};
 
 	public static String getPath(PsiElement element) {

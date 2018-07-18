@@ -1,8 +1,7 @@
 package cz.csas.smart.idea;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import cz.csas.smart.idea.model.EditorDef;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -11,6 +10,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SmartCaseAPIClient {
@@ -18,7 +18,7 @@ public class SmartCaseAPIClient {
     private final String url;
     private HttpClient client;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private Gson gson;
 
     private static final String PING_URI = "/info";
     private static final String UPLOAD_URI = "/save";
@@ -30,8 +30,7 @@ public class SmartCaseAPIClient {
         client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
         client.getHttpConnectionManager().getParams().setSoTimeout(5000);
         url = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES , false);
+        gson = new Gson();
     }
 
     public boolean ping() throws IOException {
@@ -60,8 +59,7 @@ public class SmartCaseAPIClient {
         GetMethod get = new GetMethod(url + EDITORS_URI);
         get.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         client.executeMethod(get);
-        CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, EditorDef.class);
-        return objectMapper.readValue(get.getResponseBody(), type);
+	    return gson.fromJson(get.getResponseBodyAsString(), new TypeToken<ArrayList<EditorDef>>(){}.getType());
     }
 
 

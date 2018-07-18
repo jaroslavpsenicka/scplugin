@@ -40,18 +40,19 @@ public class NameCompletionContributor extends CompletionProvider<CompletionPara
 			completions.stream()
 				.filter(c -> notYetUsed(c, parameters.getPosition().getParent()))
 				.sorted(bySeverityAndName)
-				.forEach(c -> {
-					String key = useQuotes ? ("\"" + c + "\"") : c.getText();
-					LookupElement element = LookupElementBuilder.create(key + ": " + getDefaultValue(c))
-						.withPresentableText(c.getText())
-						.withBoldness(c.required())
-						.withIcon(c.icon())
-						.withTypeText(c.getNotes() != null ? c.getNotes() : c.getType(), true)
-						.withInsertHandler((ctx, item) -> handleInsert(ctx, c));
-					result.addElement(PrioritizedLookupElement.withPriority(element, idx.getAndIncrement()));
-				}
-			);
+				.forEach(c -> result.addElement(PrioritizedLookupElement.withPriority(
+					createElement(c, useQuotes), idx.getAndIncrement())));
 		}
+	}
+
+	private LookupElement createElement(Completion.Value value, Boolean useQuotes) {
+		String key = useQuotes ? ("\"" + value + "\"") : value.getText();
+		return LookupElementBuilder.create(key + ": " + getDefaultValue(value))
+			.withPresentableText(value.getText())
+			.withBoldness(value.required())
+			.withIcon(value.icon())
+			.withTypeText(value.getNotes() != null ? value.getNotes() : value.getType(), true)
+			.withInsertHandler((ctx, item) -> handleInsert(ctx, value));
 	}
 
 	private boolean notYetUsed(Completion.Value value, PsiElement element) {
