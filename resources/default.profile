@@ -107,8 +107,8 @@
             <value type="enum" notes="5 minut">PT5M</value>
         </completion>
         <completion for="/configurations/estimatedCompletionDate/unit">
-            <value type="enum" notes="pracovní dny (pátek -> pondělí)">LABOURUNIT</value>
-            <value type="enum" notes="kalendářní dny (pátek -> sobota)">CALENDARUNIT</value>
+            <value type="enum" notes="pracovní dny (po pátku je pondělí)">LABOURUNIT</value>
+            <value type="enum" notes="kalendářní dny (po pátku je sobota)">CALENDARUNIT</value>
         </completion>
         <completion for="/createDate">
             <value type="currentTime"/>
