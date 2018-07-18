@@ -46,7 +46,7 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 		if (completions != null) {
 			completions.forEach(i -> getValue(parameters, i).forEach(j -> result.addElement(
 				LookupElementBuilder.create(j.getName())
-					.withBoldness(true).withTypeText(j.getType(), true))));
+					.withBoldness(j.isImportant()).withTypeText(j.getType(), true))));
 		}
 	}
 

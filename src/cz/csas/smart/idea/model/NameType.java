@@ -4,6 +4,7 @@ public class NameType {
 
     private String name;
     private String type;
+    private boolean important;
 
     public NameType() {}
 
@@ -20,7 +21,16 @@ public class NameType {
         return type;
     }
 
-	public boolean isType(String type) {
+    public boolean isImportant() {
+        return important;
+    }
+
+    public boolean isType(String type) {
 		return type == null || type.equals(this.type);
 	}
+
+    public NameType typeOf(String ofType) {
+        this.important = this.isType(ofType);
+        return this;
+    }
 }

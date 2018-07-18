@@ -5,8 +5,10 @@ import com.intellij.json.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import cz.csas.smart.idea.model.NameType;
+import cz.csas.smart.idea.model.PropertyDef;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +16,13 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang.StringUtils.strip;
 
 public class PsiUtils {
+
+	private static final Comparator<NameType> bySeverityAndName = (first, second) -> {
+		if (first == null || second == null) return 0;
+		else if (!first.isImportant() && second.isImportant()) return -1;
+		else if (first.isImportant() && !second.isImportant()) return 1;
+		else return first.getName().compareTo(second.getName());
+	};
 
 	public static String getPath(PsiElement element) {
 		StringBuilder buff = new StringBuilder();
@@ -48,10 +57,11 @@ public class PsiUtils {
 			.findFirst();
 		if (attributesProperty.isPresent()) {
 			JsonProperty attributesElement = attributesProperty.get();
-			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
+			return PsiTreeUtil.findChildrenOfType(attributesElement, JsonProperty.class).stream()
 				.filter(jp -> "name".equals(jp.getName()))
 				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findAttributeType(jp)))
-				.filter(nt -> nt.isType(ofType))
+				.map(nt -> nt.typeOf(ofType))
+				.sorted(bySeverityAndName)
 				.collect(Collectors.toList());
 		}
 
@@ -82,7 +92,7 @@ public class PsiUtils {
 			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
 				.filter(jp -> "name".equals(jp.getName()))
 				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
-				.filter(nt -> nt.isType(ofType))
+				.map(nt -> nt.typeOf(ofType))
 				.collect(Collectors.toList());
 		}
 
