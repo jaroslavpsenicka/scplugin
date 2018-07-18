@@ -6,11 +6,14 @@ public class NameType {
     private String type;
     private boolean important;
 
-    public NameType() {}
-
     public NameType(String name, String tail) {
         this.name = name;
         this.type = tail;
+    }
+
+    public NameType(String name, String tail, boolean important) {
+        this(name, tail);
+        this.important = important;
     }
 
     public String getName() {
@@ -21,16 +24,16 @@ public class NameType {
         return type;
     }
 
-    public boolean isImportant() {
+    public boolean important() {
         return important;
     }
 
-    public boolean isType(String type) {
-		return type == null || type.equals(this.type);
-	}
-
-    public NameType typeOf(String ofType) {
-        this.important = this.isType(ofType);
+    public NameType typeOf(String type) {
+        this.important = type == null || type.equals(this.type);
         return this;
+    }
+
+    public String toString() {
+        return name + " " + important;
     }
 }

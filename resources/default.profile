@@ -165,13 +165,11 @@
             <value type="array">items</value>
         </completion>
         <completion for="/header/items">
-            <value type="string" required="true">name</value>
-            <value type="string">expression</value>
-            <value type="string">label</value>
+            <value type="string" notes="technické jméno" required="true">name</value>
+            <value type="string" icon="nodes/enum">expression</value>
+            <value type="string" notes="lidsky čitelné jméno">label</value>
         </completion>
-        <completion for="/header/items/expression"/>
-        <completion for="/header/items/label"/>
-        <completion for="/header/items/name"/>
+
         <completion for="/importConfigurations">
             <value type="string">agendaCode</value>
             <value type="string">charset</value>
@@ -229,8 +227,6 @@
             <value type="enum">MANUAL</value>
             <value type="enum">CSOPS</value>
         </completion>
-        <completion for="/label"/>
-        <completion for="/name"/>
         <completion for="/overview">
             <value type="string" required="true">label</value>
             <value type="string" required="true">name</value>
@@ -468,29 +464,8 @@
             <value type="object">header</value>
             <value type="array">transitions</value>
         </completion>
-        <completion for="/requisition/actions">
-            <value type="string" required="true">label</value>
-            <value type="string" required="true">name</value>
-            <value type="object" required="true">type</value>
-            <value type="array">confirmations</value>
-            <value type="string">createTaskExpression</value>
-            <value type="string">description</value>
-            <value type="string">editable</value>
-            <value type="array">justifications</value>
-            <value type="boolean">primary</value>
-            <value type="boolean">skipValidation</value>
-            <value type="object">suspendUntil</value>
-            <value type="string">visible</value>
-        </completion>
-        <completion for="/requisition/actions/confirmations">
-            <value type="string">cancelButton</value>
-            <value type="string">condition</value>
-            <value type="string">note</value>
-            <value type="string">okButton</value>
-            <value type="string">severity</value>
-            <value type="string">text</value>
-            <value type="string">title</value>
-        </completion>
+        <completion for="/requisition/actions" ref="/overview/actions"/>
+        <completion for="/requisition/actions/confirmations" ref="/overview/actions/confirmations"/>
         <completion for="/requisition/actions/confirmations/cancelButton"/>
         <completion for="/requisition/actions/confirmations/condition"/>
         <completion for="/requisition/actions/confirmations/note"/>

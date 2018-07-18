@@ -17,10 +17,10 @@ import static org.apache.commons.lang.StringUtils.strip;
 
 public class PsiUtils {
 
-	private static final Comparator<NameType> bySeverityAndName = (first, second) -> {
+	public static final Comparator<NameType> bySeverityAndName = (first, second) -> {
 		if (first == null || second == null) return 0;
-		else if (!first.isImportant() && second.isImportant()) return -1;
-		else if (first.isImportant() && !second.isImportant()) return 1;
+		else if (first.important() && !second.important()) return -1;
+		else if (!first.important() && second.important()) return 1;
 		else return first.getName().compareTo(second.getName());
 	};
 

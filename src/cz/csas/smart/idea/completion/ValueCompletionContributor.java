@@ -32,21 +32,18 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 
 	public static final ValueCompletionContributor INSTANCE = new ValueCompletionContributor();
 	private final Comparator<EditorDef> byName = Comparator.comparing(EditorDef::getName);
-	private final Comparator<PropertyDef> bySeverityAndName = (first, second) -> {
-		if (first == null || second == null) return 0;
-		else if (!first.required() && second.required()) return -1;
-		else if (first.required() && !second.required()) return 1;
-		else return second.getName().compareTo(first.getName());
-	};
 
 	@Override
 	protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
 		String path = PsiUtils.getPath(parameters.getPosition().getParent());
 		List<Completion.Value> completions = ProfileComponent.getInstance().getActiveProfile().getCompletionsForPath(path);
 		if (completions != null) {
-			completions.forEach(i -> getValue(parameters, i).forEach(j -> result.addElement(
-				LookupElementBuilder.create(j.getName())
-					.withBoldness(j.isImportant()).withTypeText(j.getType(), true))));
+			completions.forEach(i -> getValue(parameters, i)
+				.forEach(j -> result.addElement(
+					LookupElementBuilder.create(j.getName())
+						.withBoldness(j.important())
+						.withTypeText(j.getType(), true)
+			)));
 		}
 	}
 
@@ -87,8 +84,8 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 			EditorDef editor = editors.get(editorName);
 			if (editor != null && editor.getProperties() != null) {
 				return editor.getProperties().stream()
-					.sorted(bySeverityAndName)
-					.map(e -> new NameType(e.getName(), e.getLabel()))
+					.map(e -> new NameType(e.getName(), e.getLabel(), e.required()))
+					.sorted(PsiUtils.bySeverityAndName)
 					.collect(Collectors.toList());
 			}
 		}

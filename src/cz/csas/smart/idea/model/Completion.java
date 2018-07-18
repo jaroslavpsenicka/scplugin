@@ -75,6 +75,7 @@ public class Completion {
 		public static final String USER_NAME = "userName";
 		public static final String CURRENT_TIME = "currentTime";
 		public static final String EDITOR_NAME = "editorName";
+		public static final String EDITOR_PROPERTY_NAME = "editorName";
 
 		public Value() {}
 
