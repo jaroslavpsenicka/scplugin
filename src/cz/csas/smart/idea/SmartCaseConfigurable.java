@@ -3,6 +3,7 @@ package cz.csas.smart.idea;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.Configurable;
+import cz.csas.smart.idea.completion.ValueCompletionContributor;
 import cz.csas.smart.idea.model.Environment;
 import cz.csas.smart.idea.model.Profile;
 import cz.csas.smart.idea.ui.SpringUtilities;
@@ -68,6 +69,7 @@ public class SmartCaseConfigurable implements Configurable {
 		EnvironmentComponent.getInstance().setAutoDeploy(deployCheckBox.isSelected());
         ProfileComponent.getInstance().setActiveProfile((Profile) profileCombo.getSelectedItem());
         ProfileComponent.getInstance().setUseQuotes(quotesCheckbox.isSelected());
+		ValueCompletionContributor.INSTANCE.reset();
 	}
 
 	@Override

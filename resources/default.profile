@@ -11,22 +11,22 @@
             <value type="object" required="true" notes="náhled dat case">overview</value>
             <value type="integer" required="true" notes="verze procesu (může být 1)" defaultValue="1" >revision</value>
             <value type="string" required="true" notes="kod procesu pro JEF" defaultValue="CTXXX">caseType</value>
-            <value type="array">authorizedRoles</value>
-            <value type="string" icon="enum">categorizationExpression</value>
+            <value type="array" notes="role uživatele">authorizedRoles</value>
+            <value type="string" icon="nodes/enum">categorizationExpression</value>
             <value type="array" notes="předpis SLA">configurations</value>
             <value type="string" notes="popis procesu (dokumentace)">description</value>
-            <value type="string">domain</value>
-            <value type="array">emailConfigurations</value>
+            <value type="string" notes="AVOS doména úkolu">domain</value>
+            <value type="array" notes="konfigurace příchozích emailů">emailConfigurations</value>
             <value type="array">expressions</value>
-            <value type="object">header</value>
+            <value type="object" notes="data v záhlaví úkolu">header</value>
             <value type="array">importConfigurations</value>
-            <value type="string">presentationSubject</value>
-            <value type="object">requisition</value>
-            <value type="array">serviceMocks</value>
-            <value type="string">shredding</value>
+            <value type="string" notes="stručný popis případu">presentationSubject</value>
+            <value type="object" notes="definice požadavku (typicky pro pobočku)">requisition</value>
+            <value type="array" notes="simulátor služeb">serviceMocks</value>
+            <value type="string" notes="nastavení skartace dokončených procesů">shredding</value>
             <value type="array">tags</value>
-            <value type="array">tasks</value>
-            <value type="array">transitions</value>
+            <value type="array" notes="vlastní úkoly">tasks</value>
+            <value type="array" notes="přechody mezi úkoly">transitions</value>
             <value type="array">uniqueHashAttributes</value>
             <value type="string">uniqueHashAttributesExpression</value>
             <value type="object">validationType</value>
@@ -39,7 +39,7 @@
             <value type="string" notes="popis atributu (dokumentace)">description</value>
             <value type="string" notes="významový typ (pro DWH)">mapping</value>
             <value type="string" notes="datový typ prvků LIST a MAP">structureType</value>
-            <value type="string" notes="validace (true pro OK)" icon="enum">validationExpression</value>
+            <value type="string" notes="validace (true pro OK)" icon="nodes/enum">validationExpression</value>
         </completion>
         <completion for="/attributes/mapping">
             <value type="enum">CLUID</value>
@@ -86,6 +86,9 @@
             <value type="enum">LIST</value>
             <value type="enum">MAP</value>
         </completion>
+        <completion for="/authorizedRoles">
+            <value type="enum">BRASIL_UNO_SmartCase_User</value>
+        </completion>
 
         <completion for="/configurations">
             <value type="string">condition</value>
@@ -100,17 +103,23 @@
             <value type="enum" notes="1 měsíc">P1M</value>
             <value type="enum" notes="2 dny">P2D</value>
             <value type="enum" notes="1 den a 12 hodin">P1DT12H</value>
+            <value type="enum" notes="8 hodin">PT8H</value>
             <value type="enum" notes="5 minut">PT5M</value>
         </completion>
         <completion for="/configurations/estimatedCompletionDate/unit">
             <value type="enum" notes="pracovní dny (pátek -> pondělí)">LABOURUNIT</value>
             <value type="enum" notes="kalendářní dny (pátek -> sobota)">CALENDARUNIT</value>
         </completion>
-
-        <completion for="/createDate"/>
-        <completion for="/createdBy"/>
-        <completion for="/domain"/>
-
+        <completion for="/createDate">
+            <value type="currentTime"/>
+        </completion>
+        <completion for="/createdBy">
+            <value type="userName"/>
+        </completion>
+        <completion for="/domain">
+            <value type="enum" notes="default">IMP</value>
+            <value type="enum" notes="alternative">OPS</value>
+        </completion>
         <completion for="/emailConfigurations">
             <value type="string">attachmentRecordType</value>
             <value type="string">bodyRecordType</value>
@@ -118,7 +127,7 @@
             <value type="string" notes="attr pro ulozeni těla zprávy" icon="css/atrule">emailContentFieldName</value>
             <value type="string" notes="attr pro ulozeni odesilatele" icon="css/atrule">emailFromFieldName</value>
             <value type="string" notes="attr pro ulozeni předmětu zprávy" icon="css/atrule">emailSubjectFieldName</value>
-            <value type="boolean" notes="podmínka pro " icon="nodes/enum" defaultValue="true">expression</value>
+            <value type="boolean" notes="podmínka pro použití konfigurace" icon="nodes/enum" defaultValue="true">expression</value>
             <value type="string" notes="schránka příchozí pošty" defaultValue="mailbox@csas.cz">mailbox</value>
             <value type="integer" defaultValue="100">priority</value>
         </completion>
@@ -811,7 +820,9 @@
             <value type="string" required="true">name</value>
             <value type="array">properties</value>
         </completion>
-        <completion for="/tasks/activities/fields/editor/name"/>
+        <completion for="/tasks/activities/fields/editor/name">
+            <value type="editorName"/>
+        </completion>
         <completion for="/tasks/activities/fields/editor/properties">
             <value type="string" required="true">name</value>
             <value type="object">value</value>

@@ -5,6 +5,8 @@ public class NameType {
     private String name;
     private String type;
 
+    public NameType() {}
+
     public NameType(String name, String tail) {
         this.name = name;
         this.type = tail;

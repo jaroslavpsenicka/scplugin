@@ -72,6 +72,9 @@ public class Completion {
 		public static final String ATTRIBUTE_NAME = "attributeName";
 		public static final String ACTIVITY_NAME = "activityName";
 		public static final String TASK_NAME = "taskName";
+		public static final String USER_NAME = "userName";
+		public static final String CURRENT_TIME = "currentTime";
+		public static final String EDITOR_NAME = "editorName";
 
 		public Value() {}
 
@@ -126,7 +129,7 @@ public class Completion {
 
 		public Icon icon() {
 			return icon != null && icon.length() > 0 ?
-				IconLoader.getIcon("/nodes/" + icon + ".png") : null;
+				IconLoader.getIcon("/" + icon + ".png") : null;
 		}
 	}
 }
