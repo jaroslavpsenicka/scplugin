@@ -110,4 +110,13 @@ public class PsiUtils {
 	}
 
 
+	public static String getEditor(PsiElement element) {
+		JsonProperty propertyNameElement = PsiTreeUtil.getParentOfType(element.getParent(), JsonProperty.class);
+		JsonProperty propertiesElement = PsiTreeUtil.getParentOfType(propertyNameElement, JsonProperty.class);
+		JsonProperty editorElement = PsiTreeUtil.getParentOfType(propertiesElement, JsonProperty.class);
+		return PsiTreeUtil.findChildrenOfType(editorElement, JsonProperty.class).stream()
+			.filter(jp -> "name".equals(jp.getName()))
+			.map(jp -> strip(jp.getValue().getText(), "\""))
+			.findFirst().orElse(null);
+	}
 }

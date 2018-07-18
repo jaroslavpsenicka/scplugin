@@ -1,12 +1,9 @@
 package cz.csas.smart.idea;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import cz.csas.smart.core.model.User;
-import cz.csas.smart.design.model.EditorDefinition;
-import cz.csas.smart.idea.model.NameType;
+import cz.csas.smart.idea.model.EditorDef;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -14,7 +11,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class SmartCaseAPIClient {
@@ -31,6 +27,8 @@ public class SmartCaseAPIClient {
 
     public SmartCaseAPIClient(String serverUrl) {
         client = new HttpClient();
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+        client.getHttpConnectionManager().getParams().setSoTimeout(5000);
         url = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES , false);
@@ -58,12 +56,14 @@ public class SmartCaseAPIClient {
         client.executeMethod(deployMethod);
     }
 
-    public List<NameType> readEditors() throws IOException {
+    public List<EditorDef> readEditors() throws IOException {
         GetMethod get = new GetMethod(url + EDITORS_URI);
         get.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         client.executeMethod(get);
-        CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, NameType.class);
+        CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, EditorDef.class);
         return objectMapper.readValue(get.getResponseBody(), type);
     }
+
+
 
 }

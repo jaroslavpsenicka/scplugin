@@ -353,7 +353,9 @@
             <value type="string" required="true">name</value>
             <value type="object">value</value>
         </completion>
-        <completion for="/overview/activities/fields/editor/properties/name"/>
+        <completion for="/overview/activities/fields/editor/properties/name">
+            <value type="editorPropertyName"/>
+        </completion>
         <completion for="/overview/activities/fields/errorLabel"/>
         <completion for="/overview/activities/fields/forceInit"/>
         <completion for="/overview/activities/fields/label"/>
@@ -827,7 +829,9 @@
             <value type="string" required="true">name</value>
             <value type="object">value</value>
         </completion>
-        <completion for="/tasks/activities/fields/editor/properties/name"/>
+        <completion for="/tasks/activities/fields/editor/properties/name">
+            <value type="editorPropertyName"/>
+        </completion>
         <completion for="/tasks/activities/fields/errorLabel"/>
         <completion for="/tasks/activities/fields/forceInit"/>
         <completion for="/tasks/activities/fields/label"/>

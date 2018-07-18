@@ -4,27 +4,40 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.json.psi.JsonProperty;
+import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import cz.csas.smart.idea.EnvironmentComponent;
 import cz.csas.smart.idea.ProfileComponent;
 import cz.csas.smart.idea.PsiUtils;
 import cz.csas.smart.idea.SmartCaseAPIClient;
 import cz.csas.smart.idea.model.Completion;
+import cz.csas.smart.idea.model.EditorDef;
 import cz.csas.smart.idea.model.NameType;
+import cz.csas.smart.idea.model.PropertyDef;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ValueCompletionContributor extends CompletionProvider<CompletionParameters> {
 
-	private List<NameType> editors;
+	private Map<String, EditorDef> editors;
 
 	public static final ValueCompletionContributor INSTANCE = new ValueCompletionContributor();
+	private final Comparator<EditorDef> byName = Comparator.comparing(EditorDef::getName);
+	private final Comparator<PropertyDef> bySeverityAndName = (first, second) -> {
+		if (first == null || second == null) return 0;
+		else if (!first.required() && second.required()) return -1;
+		else if (first.required() && !second.required()) return 1;
+		else return second.getName().compareTo(first.getName());
+	};
 
 	@Override
 	protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
@@ -51,6 +64,8 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 				return getCurrentTime();
 			} else if (Completion.Value.EDITOR_NAME.equalsIgnoreCase(value.getType())) {
 				return getEditorNames();
+			} else if (Completion.Value.EDITOR_PROPERTY_NAME.equalsIgnoreCase(value.getType())) {
+				return getEditorPropertyNames(parameters.getPosition());
 			} else if (Completion.Value.ENUM.equalsIgnoreCase(value.getType())) {
 				return Collections.singletonList(new NameType(value.getText(), value.getNotes()));
 			}
@@ -65,15 +80,28 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 		this.editors = null;
 	}
 
-	private List<NameType> getEditorNames() throws IOException {
-		if (editors == null) {
-			EnvironmentComponent environment = EnvironmentComponent.getInstance();
-			SmartCaseAPIClient client = new SmartCaseAPIClient(environment.getActiveEnvironment().getUrl());
-			this.editors = client.readEditors();
-			return editors;
+	private List<NameType> getEditorPropertyNames(PsiElement position) throws IOException {
+		String editorName = PsiUtils.getEditor(position);
+		if (editorName != null) {
+			if (editors == null) readEditors();
+			EditorDef editor = editors.get(editorName);
+			if (editor != null && editor.getProperties() != null) {
+				return editor.getProperties().stream()
+					.sorted(bySeverityAndName)
+					.map(e -> new NameType(e.getName(), e.getLabel()))
+					.collect(Collectors.toList());
+			}
 		}
 
-		return editors;
+		return Collections.emptyList();
+	}
+
+	private List<NameType> getEditorNames() throws IOException {
+		if (editors == null) readEditors();
+		return editors.values().stream()
+			.sorted(byName)
+			.map(e -> new NameType(e.getName(), e.getApplication()))
+			.collect(Collectors.toList());
 	}
 
 	private List<NameType> getCurrentTime() {
@@ -88,6 +116,13 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 		}
 
 		return Collections.emptyList();
+	}
+
+	private void readEditors() throws IOException {
+		EnvironmentComponent environment = EnvironmentComponent.getInstance();
+		SmartCaseAPIClient client = new SmartCaseAPIClient(environment.getActiveEnvironment().getUrl());
+		this.editors = client.readEditors().stream()
+			.collect(Collectors.toMap(EditorDef::getName, e -> e));
 	}
 
 
