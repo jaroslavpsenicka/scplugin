@@ -37,6 +37,11 @@ public class Completion {
 		return key;
 	}
 
+	public Completion resolveKey() {
+		this.key = this.key.replaceAll("\\*", "(.*)");
+		return this;
+	}
+
 	public String getRef() {
 		return ref;
 	}
@@ -75,16 +80,23 @@ public class Completion {
 		public static final String USER_NAME = "userName";
 		public static final String CURRENT_TIME = "currentTime";
 		public static final String EDITOR_NAME = "editorName";
-		public static final String EDITOR_PROPERTY_NAME = "editorPropertyName";
+	    public static final String EDITOR_PROPERTY_NAME = "editorPropertyName";
+	    public static final String SELECTOR_NAME = "selectorName";
+	    public static final String SELECTOR_ATTRIBUTE_NAME = "selectorAttributeName";
 
 		public Value() {}
 
-		public Value(String type, String text) {
+		public Value(String text, String type) {
 			this.type = type;
 			this.text = text;
 		}
 
-		public String getType() {
+	    public Value(String text, String type, boolean required) {
+		    this(text, type);
+		    this.required = required;
+	    }
+
+	    public String getType() {
 			return type;
 		}
 
@@ -132,5 +144,10 @@ public class Completion {
 			return icon != null && icon.length() > 0 ?
 				IconLoader.getIcon("/" + icon + ".png") : null;
 		}
-	}
+
+	    public Value requiredIfType(String type) {
+		    this.required = type == null || type.equals(this.type);
+		    return this;
+	    }
+    }
 }

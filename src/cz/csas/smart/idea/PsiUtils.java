@@ -4,7 +4,7 @@ import com.intellij.codeInsight.completion.CompletionInitializationContext;
 import com.intellij.json.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import cz.csas.smart.idea.model.NameType;
+import cz.csas.smart.idea.model.Completion;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,11 +16,11 @@ import static org.apache.commons.lang.StringUtils.strip;
 
 public class PsiUtils {
 
-	public static final Comparator<NameType> bySeverityAndName = (first, second) -> {
+	public static final Comparator<Completion.Value> bySeverityAndName = (first, second) -> {
 		if (first == null || second == null) return 0;
-		else if (!first.important() && second.important()) return -1;
-		else if (first.important() && !second.important()) return 1;
-		else return second.getName().compareTo(first.getName());
+		else if (!first.required() && second.required()) return -1;
+		else if (first.required() && !second.required()) return 1;
+		else return second.getText().compareTo(first.getText());
 	};
 
 	public static String getPath(PsiElement element) {
@@ -50,7 +50,7 @@ public class PsiUtils {
 		return topmostProperty != null ? topmostProperty.getParent() : null;
 	}
 
-	public static List<NameType> getAttributes(PsiElement element, String ofType) {
+	public static List<Completion.Value> getAttributes(PsiElement element, String ofType) {
 		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
 			.filter(jp -> "attributes".equals(jp.getName()))
 			.findFirst();
@@ -58,16 +58,15 @@ public class PsiUtils {
 			JsonProperty attributesElement = attributesProperty.get();
 			return PsiTreeUtil.findChildrenOfType(attributesElement, JsonProperty.class).stream()
 				.filter(jp -> "name".equals(jp.getName()))
-				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findAttributeType(jp)))
-				.map(nt -> nt.typeOf(ofType))
-				.sorted(bySeverityAndName)
+				.map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), findAttributeType(jp)))
+				.map(nt -> nt.requiredIfType(ofType))
 				.collect(Collectors.toList());
 		}
 
 		return Collections.emptyList();
 	}
 
-	public static List<NameType> getActivities(PsiElement element) {
+	public static List<Completion.Value> getActivities(PsiElement element) {
 		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findTaskRoot(element), JsonProperty.class).stream()
 			.filter(jp -> "activities".equals(jp.getName()))
 			.findFirst();
@@ -75,14 +74,14 @@ public class PsiUtils {
 			JsonProperty attributesElement = attributesProperty.get();
 			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
 				.filter(jp -> "name".equals(jp.getName()))
-				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), null))
+				.map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), null))
 				.collect(Collectors.toList());
 		}
 
 		return Collections.emptyList();
 	}
 
-	public static List<NameType> getTasks(PsiElement element, String ofType) {
+	public static List<Completion.Value> getTasks(PsiElement element, String ofType) {
 		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
 			.filter(jp -> "tasks".equals(jp.getName()))
 			.findFirst();
@@ -90,8 +89,8 @@ public class PsiUtils {
 			JsonProperty attributesElement = attributesProperty.get();
 			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
 				.filter(jp -> "name".equals(jp.getName()))
-				.map(jp -> new NameType(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
-				.map(nt -> nt.typeOf(ofType))
+				.map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
+				.map(val -> val.requiredIfType(ofType))
 				.collect(Collectors.toList());
 		}
 
@@ -119,7 +118,7 @@ public class PsiUtils {
 	}
 
 
-	public static String getEditor(PsiElement element) {
+	public static String getEditorOfProperty(PsiElement element) {
 		JsonProperty propertyNameElement = PsiTreeUtil.getParentOfType(element.getParent(), JsonProperty.class);
 		JsonProperty propertiesElement = PsiTreeUtil.getParentOfType(propertyNameElement, JsonProperty.class);
 		JsonProperty editorElement = PsiTreeUtil.getParentOfType(propertiesElement, JsonProperty.class);
@@ -127,5 +126,22 @@ public class PsiUtils {
 			.filter(jp -> "name".equals(jp.getName()))
 			.map(jp -> strip(jp.getValue().getText(), "\""))
 			.findFirst().orElse(null);
+	}
+
+	public static String getEditorOfSelector(PsiElement element) {
+		JsonProperty attributesElement = PsiTreeUtil.getParentOfType(element.getParent(), JsonProperty.class);
+		JsonProperty selectorElement = PsiTreeUtil.getParentOfType(attributesElement, JsonProperty.class);
+		JsonObject fieldElement = PsiTreeUtil.getParentOfType(selectorElement, JsonObject.class);
+		Optional<JsonProperty> editorElement = PsiTreeUtil.findChildrenOfType(fieldElement, JsonProperty.class).stream()
+			.filter(jp -> "editor".equals(jp.getName()))
+			.findFirst();
+		if (editorElement.isPresent()) {
+			return PsiTreeUtil.findChildrenOfType(editorElement.get().getValue(), JsonProperty.class).stream()
+				.filter(jp -> "name".equals(jp.getName()))
+				.map(jp -> strip(jp.getValue().getText(), "\""))
+				.findFirst().orElse(null);
+		}
+
+		return null;
 	}
 }

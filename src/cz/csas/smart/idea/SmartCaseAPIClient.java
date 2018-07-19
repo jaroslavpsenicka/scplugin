@@ -10,38 +10,46 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SmartCaseAPIClient {
 
-    private final String url;
     private HttpClient client;
-
     private Gson gson;
 
-    private static final String PING_URI = "/info";
+	private Map<String, EditorDef> editors = null;
+
+	private static SmartCaseAPIClient instance = new SmartCaseAPIClient();
+
+	private static final String PING_URI = "/info";
     private static final String UPLOAD_URI = "/save";
     private static final String DEPLOY_URI = "/deploy";
     private static final String EDITORS_URI = "/api/design/editordefinition";
 
-    public SmartCaseAPIClient(String serverUrl) {
+	public static SmartCaseAPIClient getInstance() {
+		return instance;
+	}
+
+    public SmartCaseAPIClient() {
         client = new HttpClient();
         client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
         client.getHttpConnectionManager().getParams().setSoTimeout(5000);
-        url = serverUrl;
         gson = new Gson();
     }
 
     public boolean ping() throws IOException {
+	    String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
         GetMethod pingMethod = new GetMethod(url + PING_URI);
         return client.executeMethod(pingMethod) == HttpStatus.SC_OK;
     }
 
     public String upload(byte[] contents) throws IOException {
+	    String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
         PostMethod uploadMethod = new PostMethod(url + UPLOAD_URI);
         uploadMethod.setRequestEntity(new StringRequestEntity(new String(contents, "UTF-8"),
             "application/json", "UTF-8"));
@@ -52,13 +60,25 @@ public class SmartCaseAPIClient {
     }
 
     public void deploy(String id) throws IOException {
+	    String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
         PostMethod deployMethod = new PostMethod(url + DEPLOY_URI);
         deployMethod.setRequestEntity(new StringRequestEntity("{id:" + id +
             "}",  "application/json", "UTF-8"));
         client.executeMethod(deployMethod);
     }
 
-    public List<EditorDef> readEditors() throws IOException {
+    public Map<String, EditorDef> getEditors() throws IOException {
+		if (editors == null) editors = readEditors().stream()
+			.collect(Collectors.toMap(EditorDef::getName, e -> e));
+		return editors;
+    }
+
+	public void reset() {
+		this.editors = null;
+	}
+
+    private List<EditorDef> readEditors() throws IOException {
+	    String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
         if (url.startsWith("http://")) {
             GetMethod get = new GetMethod(url + EDITORS_URI);
             get.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
@@ -72,5 +92,4 @@ public class SmartCaseAPIClient {
 
         return Collections.emptyList();
     }
-
 }

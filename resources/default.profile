@@ -817,6 +817,12 @@
         <completion for="/tasks/activities/fields/selector">
             <value type="object">attributes</value>
         </completion>
+        <completion for="/tasks/activities/fields/selector/attributes">
+            <value type="selectorName"/>
+        </completion>
+        <completion for="/tasks/activities/fields/selector/attributes/*/name">
+            <value type="selectorAttributeName"/>
+        </completion>
         <completion for="/tasks/activities/fields/visible"/>
         <completion for="/tasks/activities/fields/width"/>
         <completion for="/tasks/activities/label"/>

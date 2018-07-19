@@ -116,7 +116,7 @@ public class ProfileGenerator {
         	Field field = (Field) object;
         	if (field.getType().isEnum()) {
 				return new Completion(path, Arrays.stream(field.getType().getEnumConstants())
-					.map(e -> new Completion.Value(Completion.Value.ENUM, e.toString()))
+					.map(e -> new Completion.Value(e.toString(), Completion.Value.ENUM))
 					.collect(Collectors.toList()));
 	        }
         } else if (object instanceof Class) {
@@ -132,7 +132,7 @@ public class ProfileGenerator {
     }
 
 	private Completion.Value createValue(Field field) {
-		Completion.Value value = new Completion.Value(createType(field.getType()), field.getName());
+		Completion.Value value = new Completion.Value(field.getName(), createType(field.getType()));
 		value.setRequired((field.getAnnotation(NotNull.class) != null || field.getAnnotation(NotEmpty.class) != null) ? true : null);
 		value.setDefaultValue(field.getAnnotation(Min.class) != null ? String.valueOf(field.getAnnotation(Min.class).value()) : null);
 		return value;

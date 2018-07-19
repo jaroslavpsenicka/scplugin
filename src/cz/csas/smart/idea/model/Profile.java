@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @XStreamAlias("profile")
@@ -24,6 +25,7 @@ public class Profile {
 	private String description;
 	private List<Completion> completions = new ArrayList<>();
 	private Map<String, Completion> completionMap;
+	private Map<Pattern, Completion> completionPatternMap;
 
 	public Profile(String name, List<Completion> completions) {
 		this.name = name;
@@ -92,7 +94,13 @@ public class Profile {
 	}
 
 	private void processCompletions() {
-		this.completionMap = completions.stream().collect(Collectors.toMap(Completion::getKey, c -> c));
+		this.completionMap = completions.stream()
+			.filter(c -> !c.getKey().contains("*"))
+			.collect(Collectors.toMap(Completion::getKey, c -> c));
+		this.completionPatternMap = completions.stream()
+			.filter(c -> c.getKey().contains("*"))
+			.map(Completion::resolveKey)
+			.collect(Collectors.toMap(c -> Pattern.compile(c.getKey()), c -> c));
 		this.completions.stream()
 			.filter(c -> StringUtils.isNotEmpty(c.getRef()))
 			.filter(c -> this.completionMap.containsKey(c.getRef()))
