@@ -102,7 +102,7 @@ public class NameCompletionContributor extends CompletionProvider<CompletionPara
 		EditorDef editor = SmartCaseAPIClient.getInstance().getEditors().get(editorName);
 		if (editor != null && editor.getModel() != null) {
 			return editor.getModel().entrySet().stream()
-				.map(e -> new Completion.Value(e.getKey(), e.getValue().getType()))
+				.map(e -> new Completion.Value(e.getKey(), e.getValue().getLabel()))
 				.collect(Collectors.toList());
 		}
 
