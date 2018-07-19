@@ -4,7 +4,7 @@ public class PropertyDef {
 
     private String name;
     private String label;
-    private String required;
+    private Boolean required;
 
     public String getName() {
         return name;
@@ -23,14 +23,10 @@ public class PropertyDef {
     }
 
     public boolean required() {
-        return "T".equalsIgnoreCase(required);
-    }
-
-    public String getRequired() {
         return required;
     }
 
-    public void setRequired(String required) {
+    public void setRequired(Boolean required) {
         this.required = required;
     }
 }

@@ -10,7 +10,10 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SmartCaseAPIClient {
@@ -29,7 +32,7 @@ public class SmartCaseAPIClient {
         client = new HttpClient();
         client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
         client.getHttpConnectionManager().getParams().setSoTimeout(5000);
-        url = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
+        url = serverUrl;
         gson = new Gson();
     }
 
@@ -56,12 +59,18 @@ public class SmartCaseAPIClient {
     }
 
     public List<EditorDef> readEditors() throws IOException {
-        GetMethod get = new GetMethod(url + EDITORS_URI);
-        get.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
-        client.executeMethod(get);
-	    return gson.fromJson(get.getResponseBodyAsString(), new TypeToken<ArrayList<EditorDef>>(){}.getType());
+        if (url.startsWith("http://")) {
+            GetMethod get = new GetMethod(url + EDITORS_URI);
+            get.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
+            client.executeMethod(get);
+            return gson.fromJson(get.getResponseBodyAsString(), new TypeToken<ArrayList<EditorDef>>(){}.getType());
+        } else if (url.startsWith("file://")) {
+            String base = url.substring(7); // file://
+            InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(base + EDITORS_URI));
+            return gson.fromJson(reader, new TypeToken<ArrayList<EditorDef>>(){}.getType());
+        }
+
+        return Collections.emptyList();
     }
-
-
 
 }
