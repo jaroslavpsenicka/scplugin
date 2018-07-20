@@ -38,7 +38,7 @@
         <enterHandlerDelegate implementation="com.intellij.json.formatter.JsonEnterBetweenBracesHandler"/>
 
         <!-- Codeinsight -->
-        <completion.contributor language="JSON" implementationClass="cz.csas.smart.idea.SmartCompletionContributor"/>
+        <completion.contributor language="JSON" implementationClass="cz.csas.smart.idea.completion.SmartCompletionContributor"/>
         <!-- breadcrumbsInfoProvider implementation="com.intellij.json.breadcrumbs.JsonBreadcrumbsProvider"/>
         <qualifiedNameProvider implementation="com.intellij.json.navigation.JsonQualifiedNameProvider"/>
         <lang.psiStructureViewFactory language="JSON" implementationClass="com.intellij.json.structureView.JsonStructureViewBuilderFactory"/>
@@ -74,12 +74,12 @@
 
 
     <actions>
-        <action id="smart.upload" class="cz.csas.smart.idea.UploadAction"
+        <action id="smart.upload" class="cz.csas.smart.idea.action.UploadAction"
             text="Upload" description="Upload to server, with options">
             <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last"/>
             <keyboard-shortcut first-keystroke="control U" keymap="$default" replace-all="true"/>
         </action>
-        <action id="smart.uploadFast" class="cz.csas.smart.idea.UploadFastAction"
+        <action id="smart.uploadFast" class="cz.csas.smart.idea.action.UploadFastAction"
             text="Upload!" description="Upload to server">
             <keyboard-shortcut first-keystroke="control shift U" keymap="$default" replace-all="true"/>
         </action>

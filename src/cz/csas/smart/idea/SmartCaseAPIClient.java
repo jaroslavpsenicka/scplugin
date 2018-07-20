@@ -3,6 +3,7 @@ package cz.csas.smart.idea;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import cz.csas.smart.idea.model.EditorDef;
+import cz.csas.smart.idea.model.UploadResponse;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -49,11 +50,19 @@ public class SmartCaseAPIClient {
     }
 
     public String upload(byte[] contents) throws IOException {
-	    String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
+        String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
+        if (url.startsWith("file://")) {
+            throw new IllegalStateException("cannot upload while off-line");
+        }
+
         PostMethod uploadMethod = new PostMethod(url + UPLOAD_URI);
+        uploadMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         uploadMethod.setRequestEntity(new StringRequestEntity(new String(contents, "UTF-8"),
-            "application/json", "UTF-8"));
+                "application/json", "UTF-8"));
         client.executeMethod(uploadMethod);
+
+        UploadResponse respone = gson.fromJson(uploadMethod.getResponseBody().toString(), UploadResponse.class);
+
         String response = uploadMethod.getResponseBody().toString();
         System.out.println(response);
         return "1"; // TODO use real ID returned from

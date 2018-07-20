@@ -1,4 +1,4 @@
-package cz.csas.smart.idea;
+package cz.csas.smart.idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
 import com.intellij.json.psi.*;

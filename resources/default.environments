@@ -3,5 +3,5 @@
     <environment name="DEVA (latest greatest)">http://smart-deva.csint.cz/smart</environment>
     <environment name="DEVC (experimental)">http://smart-devc.csint.cz/smart</environment>
     <environment name="PRS (production support)">http://smart-prs.csint.cz/smart</environment>
-    <environment name="TEST (local)">file:///data</environment>
+    <environment name="TEST (offline)">file:///data</environment>
 </environments>

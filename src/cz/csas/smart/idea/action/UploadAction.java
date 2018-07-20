@@ -1,16 +1,7 @@
-package cz.csas.smart.idea;
+package cz.csas.smart.idea.action;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.vfs.VirtualFile;
-import cz.csas.smart.idea.model.Environment;
 import cz.csas.smart.idea.ui.UploadDialog;
-
-import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.io.IOException;
 
 public class UploadAction extends UploadFastAction {
 

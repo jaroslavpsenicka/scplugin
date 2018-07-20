@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import cz.csas.smart.idea.ProfileComponent;
-import cz.csas.smart.idea.PsiUtils;
 import cz.csas.smart.idea.SmartCaseAPIClient;
 import cz.csas.smart.idea.model.Completion;
 import cz.csas.smart.idea.model.EditorDef;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static cz.csas.smart.idea.model.Completion.Value.SELECTOR_ATTRIBUTE_NAME;
 import static cz.csas.smart.idea.model.Completion.Value.SELECTOR_NAME;
 
 public class NameCompletionContributor extends CompletionProvider<CompletionParameters> {
