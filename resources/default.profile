@@ -820,6 +820,9 @@
         <completion for="/tasks/activities/fields/selector/attributes">
             <value type="selectorName"/>
         </completion>
+        <completion for="/tasks/activities/fields/selector/attributes/*">
+            <value type="string" required="true">name</value>
+        </completion>
         <completion for="/tasks/activities/fields/selector/attributes/*/name">
             <value type="selectorAttributeName"/>
         </completion>

@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static cz.csas.smart.idea.model.Completion.Value.*;
+
 public class ValueCompletionContributor extends CompletionProvider<CompletionParameters> {
 
 	public static final ValueCompletionContributor INSTANCE = new ValueCompletionContributor();
@@ -51,22 +53,24 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 
 	private List<Completion.Value> getValues(CompletionParameters parameters, Completion.Value value) {
 		try {
-			if (Completion.Value.ATTRIBUTE_NAME.equalsIgnoreCase(value.getType())) {
+			if (ATTRIBUTE_NAME.equalsIgnoreCase(value.getType())) {
 				return PsiUtils.getAttributes(parameters.getPosition(), value.getOf());
-			} else if (Completion.Value.ACTIVITY_NAME.equalsIgnoreCase(value.getType())) {
+			} else if (ACTIVITY_NAME.equalsIgnoreCase(value.getType())) {
 				return PsiUtils.getActivities(parameters.getPosition());
-			} else if (Completion.Value.TASK_NAME.equalsIgnoreCase(value.getType())) {
+			} else if (TASK_NAME.equalsIgnoreCase(value.getType())) {
 				return PsiUtils.getTasks(parameters.getPosition(), value.getOf());
-			} else if (Completion.Value.USER_NAME.equalsIgnoreCase(value.getType())) {
+			} else if (USER_NAME.equalsIgnoreCase(value.getType())) {
 				return getCurrentUsername();
-			} else if (Completion.Value.CURRENT_TIME.equalsIgnoreCase(value.getType())) {
+			} else if (CURRENT_TIME.equalsIgnoreCase(value.getType())) {
 				return getCurrentTime();
-			} else if (Completion.Value.EDITOR_NAME.equalsIgnoreCase(value.getType())) {
+			} else if (EDITOR_NAME.equalsIgnoreCase(value.getType())) {
 				return getEditorNames();
-			} else if (Completion.Value.EDITOR_PROPERTY_NAME.equalsIgnoreCase(value.getType())) {
+			} else if (EDITOR_PROPERTY_NAME.equalsIgnoreCase(value.getType())) {
 				return getEditorPropertyNames(parameters.getPosition());
-			} else if (Completion.Value.ENUM.equalsIgnoreCase(value.getType())) {
+			} else if (ENUM.equalsIgnoreCase(value.getType())) {
 				return Collections.singletonList(new Completion.Value(value.getText(), value.getNotes()));
+			} else if (SELECTOR_ATTRIBUTE_NAME.equals(value.getType())) {
+				return getSelectorAttributeNames(parameters.getPosition());
 			}
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, "Problem processing value (" + ex.getMessage() + ").");
@@ -102,6 +106,20 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 		String username = System.getenv().get("USERNAME");
 		if (StringUtils.isNotEmpty(username)) {
 			return Collections.singletonList(new Completion.Value(username, "aktuální uživatel"));
+		}
+
+		return Collections.emptyList();
+	}
+
+	private List<Completion.Value> getSelectorAttributeNames(PsiElement position) throws IOException {
+		String editorName = PsiUtils.getEditorOfSelector(position.getParent());
+		String selectorName = PsiUtils.getNameOfSelector(position.getParent());
+			EditorDef editor = SmartCaseAPIClient.getInstance().getEditors().get(editorName);
+		if (editor != null && editor.getModel() != null) {
+			if (editor.getModel().containsKey(selectorName)) {
+				String attrType = editor.getModel().get(selectorName).getType();
+				return PsiUtils.getAttributes(position.getParent(), attrType);
+			}
 		}
 
 		return Collections.emptyList();

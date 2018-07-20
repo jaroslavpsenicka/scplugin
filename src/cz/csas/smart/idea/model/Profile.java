@@ -69,7 +69,16 @@ public class Profile {
 	}
 
 	public List<Completion.Value> getCompletionsForPath(String path) {
-		return completionMap.containsKey(path) ? completionMap.get(path).getValues() : null;
+		List<Completion.Value> values = new ArrayList<>();
+		if (completionMap.containsKey(path)) {
+			values.addAll(completionMap.get(path).getValues());
+		}
+
+		completionPatternMap.entrySet().stream()
+			.filter(p -> p.getKey().matcher(path).matches())
+			.forEach(p -> values.addAll(p.getValue().getValues()));
+
+		return values;
 	}
 
 	public boolean canReload() {

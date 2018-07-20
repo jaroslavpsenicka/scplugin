@@ -96,7 +96,12 @@ public class Completion {
 		    this.required = required;
 	    }
 
-	    public String getType() {
+		public Value(String text, String type, String notes) {
+			this(text, type);
+			this.notes = notes;
+		}
+
+		public String getType() {
 			return type;
 		}
 
@@ -149,5 +154,6 @@ public class Completion {
 		    this.required = type == null || type.equals(this.type);
 		    return this;
 	    }
-    }
+
+	}
 }

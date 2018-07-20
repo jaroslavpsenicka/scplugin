@@ -129,7 +129,8 @@ public class PsiUtils {
 	}
 
 	public static String getEditorOfSelector(PsiElement element) {
-		JsonProperty attributesElement = PsiTreeUtil.getParentOfType(element.getParent(), JsonProperty.class);
+		JsonProperty attributeElement = PsiTreeUtil.getParentOfType(element.getParent(), JsonProperty.class);
+		JsonProperty attributesElement = PsiTreeUtil.getParentOfType(attributeElement, JsonProperty.class);
 		JsonProperty selectorElement = PsiTreeUtil.getParentOfType(attributesElement, JsonProperty.class);
 		JsonObject fieldElement = PsiTreeUtil.getParentOfType(selectorElement, JsonObject.class);
 		Optional<JsonProperty> editorElement = PsiTreeUtil.findChildrenOfType(fieldElement, JsonProperty.class).stream()
@@ -143,5 +144,10 @@ public class PsiUtils {
 		}
 
 		return null;
+	}
+
+	public static String getNameOfSelector(PsiElement element) {
+		JsonProperty selectorElement = PsiTreeUtil.getParentOfType(element.getParent(), JsonProperty.class);
+		return selectorElement.getName();
 	}
 }

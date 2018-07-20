@@ -51,8 +51,6 @@ public class NameCompletionContributor extends CompletionProvider<CompletionPara
 		try {
 			if (SELECTOR_NAME.equals(value.getType())) {
 				return getSelectorNames(parameters.getPosition());
-			} else if (SELECTOR_ATTRIBUTE_NAME.equals(value.getType())) {
-				return getSelectorAttributeNames(parameters.getPosition());
 			}
 
 			return Collections.singletonList(value);
@@ -102,19 +100,7 @@ public class NameCompletionContributor extends CompletionProvider<CompletionPara
 		EditorDef editor = SmartCaseAPIClient.getInstance().getEditors().get(editorName);
 		if (editor != null && editor.getModel() != null) {
 			return editor.getModel().entrySet().stream()
-				.map(e -> new Completion.Value(e.getKey(), e.getValue().getLabel()))
-				.collect(Collectors.toList());
-		}
-
-		return Collections.emptyList();
-	}
-
-	private List<Completion.Value> getSelectorAttributeNames(PsiElement position) throws IOException {
-		String editorName = PsiUtils.getEditorOfSelector(position.getParent());
-		EditorDef editor = SmartCaseAPIClient.getInstance().getEditors().get(editorName);
-		if (editor != null && editor.getModel() != null) {
-			return editor.getModel().entrySet().stream()
-				.map(e -> new Completion.Value(e.getKey(), e.getValue().getType()))
+				.map(e -> new Completion.Value(e.getKey(), Completion.Value.OBJECT, e.getValue().getLabel()))
 				.collect(Collectors.toList());
 		}
 
