@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import cz.csas.smart.idea.EnvironmentComponent;
 import cz.csas.smart.idea.SmartCaseAPIClient;
 import cz.csas.smart.idea.SmartFileType;
+import cz.csas.smart.idea.action.Uploader;
 import cz.csas.smart.idea.model.Environment;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,10 +19,6 @@ public class UploadDialog extends DialogWrapper {
     private JComboBox<Environment> environmentCombo;
     private JCheckBox deployCheckBox;
     private JCheckBox hotdeployCheckBox;
-
-    public enum DeployOptions {
-        NONE, DEPLOY, HOTDEPLOY
-    }
 
     public UploadDialog(Project project) {
         super(project, true);
@@ -37,9 +34,9 @@ public class UploadDialog extends DialogWrapper {
         return (Environment) environmentCombo.getSelectedItem();
     }
 
-    public DeployOptions deployOptions() {
-        return hotdeployCheckBox.isSelected() ? DeployOptions.HOTDEPLOY :
-            deployCheckBox.isSelected() ? DeployOptions.DEPLOY : DeployOptions.NONE;
+    public Uploader.DeployOptions deployOptions() {
+        return hotdeployCheckBox.isSelected() ? Uploader.DeployOptions.HOTDEPLOY :
+            deployCheckBox.isSelected() ? Uploader.DeployOptions.DEPLOY : Uploader.DeployOptions.NONE;
     }
 
     protected JComponent createCenterPanel() {
