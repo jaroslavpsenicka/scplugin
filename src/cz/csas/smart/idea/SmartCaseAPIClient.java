@@ -2,13 +2,17 @@ package cz.csas.smart.idea;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.intellij.openapi.vfs.VirtualFile;
 import cz.csas.smart.idea.model.EditorDef;
+import cz.csas.smart.idea.model.Environment;
 import cz.csas.smart.idea.model.UploadResponse;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,8 +32,9 @@ public class SmartCaseAPIClient {
 	private static SmartCaseAPIClient instance = new SmartCaseAPIClient();
 
 	private static final String PING_URI = "/info";
-    private static final String UPLOAD_URI = "/save";
+    private static final String UPLOAD_URI = "/api/design/casemodel";
     private static final String DEPLOY_URI = "/deploy";
+    private static final String HOTDEPLOY_URI = "/hotdeploy";
     private static final String EDITORS_URI = "/api/design/editordefinition";
 
 	public static SmartCaseAPIClient getInstance() {
@@ -43,36 +48,28 @@ public class SmartCaseAPIClient {
         gson = new Gson();
     }
 
-    public boolean ping() throws IOException {
-	    String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
-        GetMethod pingMethod = new GetMethod(url + PING_URI);
-        return client.executeMethod(pingMethod) == HttpStatus.SC_OK;
-    }
-
-    public String upload(byte[] contents) throws IOException {
-        String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
+    public UploadResponse upload(VirtualFile file, Environment environment) throws IOException {
+        String url = environment.getUrl();
         if (url.startsWith("file://")) {
             throw new IllegalStateException("cannot upload while off-line");
         }
-
         PostMethod uploadMethod = new PostMethod(url + UPLOAD_URI);
         uploadMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
-        uploadMethod.setRequestEntity(new StringRequestEntity(new String(contents, "UTF-8"),
-                "application/json", "UTF-8"));
+        Part filePart = new FilePart("file", new ByteArrayPartSource(file.getName(), file.contentsToByteArray()),
+            "application/json", "UTF-8");
+        uploadMethod.setRequestEntity(new MultipartRequestEntity(new Part[] { filePart }, uploadMethod.getParams()));
         client.executeMethod(uploadMethod);
-
-        UploadResponse respone = gson.fromJson(uploadMethod.getResponseBody().toString(), UploadResponse.class);
-
-        String response = uploadMethod.getResponseBody().toString();
-        System.out.println(response);
-        return "1"; // TODO use real ID returned from
+        return gson.fromJson(new String(uploadMethod.getResponseBody()), UploadResponse.class);
     }
 
-    public void deploy(String id) throws IOException {
-	    String url = EnvironmentComponent.getInstance().getActiveEnvironment().getUrl();
-        PostMethod deployMethod = new PostMethod(url + DEPLOY_URI);
-        deployMethod.setRequestEntity(new StringRequestEntity("{id:" + id +
-            "}",  "application/json", "UTF-8"));
+    public void deploy(long id, Environment environment, boolean hotDeploy) throws IOException {
+        String url = environment.getUrl();
+        if (url.startsWith("file://")) {
+            throw new IllegalStateException("cannot deploy while off-line");
+        }
+
+        PostMethod deployMethod = new PostMethod(UPLOAD_URI + "/" + id + (hotDeploy ? HOTDEPLOY_URI : DEPLOY_URI));
+        deployMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         client.executeMethod(deployMethod);
     }
 

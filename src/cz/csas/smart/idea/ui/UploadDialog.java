@@ -19,6 +19,10 @@ public class UploadDialog extends DialogWrapper {
     private JCheckBox deployCheckBox;
     private JCheckBox hotdeployCheckBox;
 
+    public enum DeployOptions {
+        NONE, DEPLOY, HOTDEPLOY
+    }
+
     public UploadDialog(Project project) {
         super(project, true);
         this.setTitle("Upload to server");
@@ -33,18 +37,18 @@ public class UploadDialog extends DialogWrapper {
         return (Environment) environmentCombo.getSelectedItem();
     }
 
-    public boolean doDeploy() {
-        return deployCheckBox.isSelected();
-    }
-    public boolean doHotdeploy() {
-        return hotdeployCheckBox.isSelected();
+    public DeployOptions deployOptions() {
+        return hotdeployCheckBox.isSelected() ? DeployOptions.HOTDEPLOY :
+            deployCheckBox.isSelected() ? DeployOptions.DEPLOY : DeployOptions.NONE;
     }
 
     protected JComponent createCenterPanel() {
         JPanel panel = new JPanel();
 
         environmentCombo = new JComboBox<>();
-        EnvironmentComponent.getInstance().getEnvironments().forEach(p -> environmentCombo.addItem(p));
+        EnvironmentComponent.getInstance().getEnvironments().stream()
+            .filter(p -> p.getUrl().startsWith("http://"))
+            .forEach(p -> environmentCombo.addItem(p));
         environmentCombo.setSelectedItem(EnvironmentComponent.getInstance().getActiveEnvironment());
         deployCheckBox = new JCheckBox("Deploy");
         deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());

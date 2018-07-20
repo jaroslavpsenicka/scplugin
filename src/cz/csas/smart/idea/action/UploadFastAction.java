@@ -8,6 +8,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import cz.csas.smart.idea.EnvironmentComponent;
 import cz.csas.smart.idea.SmartCaseAPIClient;
 import cz.csas.smart.idea.SmartFileType;
+import cz.csas.smart.idea.model.Environment;
+import cz.csas.smart.idea.model.UploadResponse;
+import cz.csas.smart.idea.ui.UploadDialog;
 
 import javax.swing.*;
 
@@ -24,15 +27,9 @@ public class UploadFastAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        VirtualFile file = (VirtualFile) event.getDataContext().getData(DataKeys.VIRTUAL_FILE.getName());
-        if (file != null) try {
-            EnvironmentComponent environment = EnvironmentComponent.getInstance();
-            SmartCaseAPIClient client = SmartCaseAPIClient.getInstance();
-            String id = client.upload(file.contentsToByteArray());
-            if (environment.isAutoDeploy()) client.deploy(id);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error uploading file, " + ex.toString());
-        }
+        VirtualFile data = (VirtualFile) event.getDataContext().getData(DataKeys.VIRTUAL_FILE.getName());
+        EnvironmentComponent env = EnvironmentComponent.getInstance();
+        new Uploader(env.getActiveEnvironment()).upload(data, env.isAutoDeploy() ? UploadDialog.DeployOptions.DEPLOY : UploadDialog.DeployOptions.NONE);
     }
 
 }
