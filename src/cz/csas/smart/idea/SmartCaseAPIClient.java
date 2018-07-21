@@ -31,10 +31,7 @@ public class SmartCaseAPIClient {
 
 	private static SmartCaseAPIClient instance = new SmartCaseAPIClient();
 
-	private static final String PING_URI = "/info";
-    private static final String UPLOAD_URI = "/api/design/casemodel";
-    private static final String DEPLOY_URI = "/deploy";
-    private static final String HOTDEPLOY_URI = "/hotdeploy";
+    private static final String BASE_URI = "/api/design/casemodel";
     private static final String EDITORS_URI = "/api/design/editordefinition";
 
 	public static SmartCaseAPIClient getInstance() {
@@ -53,7 +50,8 @@ public class SmartCaseAPIClient {
         if (url.startsWith("file://")) {
             throw new IllegalStateException("cannot upload while off-line");
         }
-        PostMethod uploadMethod = new PostMethod(url + UPLOAD_URI);
+
+        PostMethod uploadMethod = new PostMethod(url + BASE_URI);
         uploadMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         Part filePart = new FilePart("file", new ByteArrayPartSource(file.getName(), file.contentsToByteArray()),
             "application/json", "UTF-8");
@@ -62,15 +60,30 @@ public class SmartCaseAPIClient {
         return gson.fromJson(new String(uploadMethod.getResponseBody()), UploadResponse.class);
     }
 
-    public void deploy(long id, Environment environment, boolean hotDeploy) throws IOException {
+    public void deploy(VirtualFile file, Environment environment) throws IOException {
         String url = environment.getUrl();
         if (url.startsWith("file://")) {
             throw new IllegalStateException("cannot deploy while off-line");
         }
 
-        PostMethod deployMethod = new PostMethod(UPLOAD_URI + "/" + id + (hotDeploy ? HOTDEPLOY_URI : DEPLOY_URI));
+        UploadResponse uploadResponse = upload(file, environment);
+        PostMethod deployMethod = new PostMethod(url + BASE_URI + "/" + uploadResponse.getId() + "/deploy");
         deployMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         client.executeMethod(deployMethod);
+    }
+
+    public void hotdeploy(VirtualFile file, Environment environment) throws IOException {
+        String url = environment.getUrl();
+        if (url.startsWith("file://")) {
+            throw new IllegalStateException("cannot deploy while off-line");
+        }
+
+        PostMethod uploadMethod = new PostMethod(url + BASE_URI + "/hotdeploy");
+        uploadMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
+        Part filePart = new FilePart("file", new ByteArrayPartSource(file.getName(), file.contentsToByteArray()),
+            "application/json", "UTF-8");
+        uploadMethod.setRequestEntity(new MultipartRequestEntity(new Part[] { filePart }, uploadMethod.getParams()));
+        client.executeMethod(uploadMethod);
     }
 
     public Map<String, EditorDef> getEditors() throws IOException {

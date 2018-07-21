@@ -9,6 +9,8 @@ import java.util.List;
 
 public class UserComponent {
 
+	private String user = System.getenv().get("USERNAME");
+
 	private static UserComponent instance = new UserComponent();
 
 	public static final UserComponent getInstance() {
@@ -16,6 +18,10 @@ public class UserComponent {
 	}
 
 	public String getUser() {
-		return System.getenv().get("USERNAME");
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
 	}
 }

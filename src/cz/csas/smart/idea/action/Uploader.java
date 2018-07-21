@@ -25,7 +25,7 @@ public class Uploader implements HyperlinkListener {
     private StatusBar statusBar;
 
     public enum DeployOptions {
-        NONE, DEPLOY, HOTDEPLOY;
+        UPLOAD, DEPLOY, HOTDEPLOY;
     }
 
     public Uploader(DataContext ctx) {
@@ -34,18 +34,24 @@ public class Uploader implements HyperlinkListener {
     }
 
     public void upload(EnvironmentComponent env) {
-        DeployOptions options = env.isAutoDeploy() ? DeployOptions.DEPLOY : DeployOptions.NONE;
+        DeployOptions options = env.isAutoDeploy() ? DeployOptions.DEPLOY : DeployOptions.UPLOAD;
         this.upload(env.getActiveEnvironment(), options);
     }
 
     public void upload(Environment env, DeployOptions options) {
+        String message = null;
         if (file != null) try {
             SmartCaseAPIClient client = SmartCaseAPIClient.getInstance();
-            UploadResponse upload = client.upload(file, env);
-            String message = "Upload of " + file.getName() + " to " + env.getName() + " complete.";
-            if (options != DeployOptions.NONE) {
-                client.deploy(upload.getId(), env, options == DeployOptions.HOTDEPLOY);
+            if (options == DeployOptions.UPLOAD) {
+                client.upload(file, env);
+                message = "Upload of " + file.getName() + " to " + env.getName() + " complete.";
+            } else if (options == DeployOptions.DEPLOY) {
+                client.deploy(file, env);
                 message = "Deployment of " + file.getName() + " to " + env.getName() + " complete. " +
+                    "<a href='1'>Click here to start the case.</a>";
+            } else if (options == DeployOptions.HOTDEPLOY) {
+                client.hotdeploy(file, env);
+                message = "Hotdeploy of " + file.getName() + " to " + env.getName() + " complete. " +
                     "<a href='1'>Click here to start the case.</a>";
             }
 
@@ -53,7 +59,7 @@ public class Uploader implements HyperlinkListener {
                 .createHtmlTextBalloonBuilder(message, MessageType.INFO, this)
                 .setFadeoutTime(3500)
                 .createBalloon()
-                .show(RelativePoint.getCenterOf(statusBar.getComponent()), Balloon.Position.atRight);
+                .show(RelativePoint.getNorthEastOf(statusBar.getComponent()), Balloon.Position.atRight);
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Error uploading file, " + ex.toString());
