@@ -25,9 +25,10 @@ public class SmartCaseConfigurable implements Configurable {
 	private JButton profileOpenInExplorer;
 	private JCheckBox deployCheckBox;
     private JCheckBox quotesCheckbox;
-    private boolean isDirty;
+	private JCheckBox autoValidateCheckbox;
+	private boolean isDirty;
 
-    @Nls
+	@Nls
     @Override
     public String getDisplayName() {
         return "SmartCase";
@@ -46,11 +47,14 @@ public class SmartCaseConfigurable implements Configurable {
 	    JPanel component1 = createEnvironmentPanel();
 	    contents.add(createLabel("Environment:", component1));
 	    contents.add(component1);
-	    JPanel component2 = createProfilePanel();
-	    contents.add(createLabel("Completion Profile:", component2));
-	    contents.add(component2);
+		JPanel component2 = createProfilePanel();
+		contents.add(createLabel("Completion Profile:", component2));
+		contents.add(component2);
+		JPanel component3 = createValidationPanel();
+		contents.add(createLabel("Validation:", component3));
+		contents.add(component3);
 
-	    SpringUtilities.makeCompactGrid(contents, 2, 2, 0, 0, 5, 5);
+	    SpringUtilities.makeCompactGrid(contents, contents.getComponentCount()/2, 2, 0, 0, 5, 20);
 
 	    this.component = new JPanel(new BorderLayout());
 		this.component.add(contents, BorderLayout.NORTH);
@@ -68,6 +72,7 @@ public class SmartCaseConfigurable implements Configurable {
 		EnvironmentComponent.getInstance().setAutoDeploy(deployCheckBox.isSelected());
         ProfileComponent.getInstance().setActiveProfile((Profile) profileCombo.getSelectedItem());
         ProfileComponent.getInstance().setUseQuotes(quotesCheckbox.isSelected());
+        ValidationComponent.getInstance().setAutoValidate(autoValidateCheckbox.isSelected());
 		SmartCaseAPIClient.getInstance().reset();
 	}
 
@@ -77,6 +82,7 @@ public class SmartCaseConfigurable implements Configurable {
 		deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
 		profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
         quotesCheckbox.setSelected(ProfileComponent.getInstance().useQuotes());
+		autoValidateCheckbox.setSelected(ValidationComponent.getInstance().isAutoValidate());
 	}
 
 	@Override
@@ -175,6 +181,16 @@ public class SmartCaseConfigurable implements Configurable {
         profileInfo.add(quotesCheckbox, BorderLayout.SOUTH);
 		profilePanel.add(profileInfo, BorderLayout.SOUTH);
 		return profilePanel;
+	}
+
+	@NotNull
+	private JPanel createValidationPanel() {
+		autoValidateCheckbox = new JCheckBox("Validate open editors on build");
+		autoValidateCheckbox.setSelected(ValidationComponent.getInstance().isAutoValidate());
+
+		JPanel environmentPanel = new JPanel(new BorderLayout(5, 5));
+		environmentPanel.add(autoValidateCheckbox, BorderLayout.NORTH);
+		return environmentPanel;
 	}
 
 }

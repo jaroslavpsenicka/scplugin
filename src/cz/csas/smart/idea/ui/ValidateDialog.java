@@ -5,23 +5,20 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.DocumentAdapter;
 import cz.csas.smart.idea.EnvironmentComponent;
 import cz.csas.smart.idea.UserComponent;
-import cz.csas.smart.idea.Uploader;
 import cz.csas.smart.idea.model.Environment;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 
-public class UploadDialog extends DialogWrapper {
+public class ValidateDialog extends DialogWrapper {
 
     private JComboBox<Environment> environmentCombo;
-    private JCheckBox deployCheckBox;
-    private JCheckBox hotdeployCheckBox;
     private JTextField usernameField;
 
-    public UploadDialog(Project project) {
+    public ValidateDialog(Project project) {
         super(project, true);
-        this.setTitle("Upload to server");
+        this.setTitle("Validate");
         this.setResizable(true);
         this.setModal(true);
         this.setOKActionEnabled(true);
@@ -37,11 +34,6 @@ public class UploadDialog extends DialogWrapper {
         return usernameField.getText();
     }
 
-    public Uploader.DeployOptions getDeployOptions() {
-        return hotdeployCheckBox.isSelected() ? Uploader.DeployOptions.HOTDEPLOY :
-            deployCheckBox.isSelected() ? Uploader.DeployOptions.DEPLOY : Uploader.DeployOptions.UPLOAD;
-    }
-
     protected JComponent createCenterPanel() {
         JPanel panel = new JPanel();
 
@@ -50,11 +42,6 @@ public class UploadDialog extends DialogWrapper {
             .filter(p -> p.getUrl().startsWith("http://"))
             .forEach(p -> environmentCombo.addItem(p));
         environmentCombo.setSelectedItem(EnvironmentComponent.getInstance().getActiveEnvironment());
-        deployCheckBox = new JCheckBox("Deploy");
-        deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
-        deployCheckBox.addItemListener(l -> hotdeployCheckBox.setEnabled(deployCheckBox.isSelected()));
-        hotdeployCheckBox = new JCheckBox("Hotdeploy");
-        hotdeployCheckBox.setEnabled(deployCheckBox.isSelected());
 
         String user = UserComponent.getInstance().getUser();
         usernameField = new JTextField();
@@ -66,16 +53,12 @@ public class UploadDialog extends DialogWrapper {
         });
 
         panel.setLayout(new SpringLayout());
-        panel.add(new JLabel("Upload to: "));
+        panel.add(new JLabel("Validate via: "));
         panel.add(environmentCombo);
         panel.add(new JLabel("as CEN/EXT: "));
         panel.add(usernameField);
-        panel.add(new JLabel(""));
-        panel.add(deployCheckBox);
-        panel.add(new JLabel(""));
-        panel.add(hotdeployCheckBox);
         panel.setSize(300, 75);
-        SpringUtilities.makeCompactGrid(panel, 4, 2, 0, 0, 5, 5);
+        SpringUtilities.makeCompactGrid(panel, 2, 2, 0, 0, 5, 5);
 
         return panel;
     }

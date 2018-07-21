@@ -2,6 +2,7 @@ package cz.csas.smart.idea.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import cz.csas.smart.idea.Uploader;
 import cz.csas.smart.idea.UserComponent;
 import cz.csas.smart.idea.model.Environment;
 import cz.csas.smart.idea.ui.UploadDialog;

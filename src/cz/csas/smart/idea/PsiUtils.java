@@ -1,4 +1,4 @@
-package cz.csas.smart.idea.completion;
+package cz.csas.smart.idea;
 
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
 import com.intellij.json.psi.*;
@@ -26,7 +26,7 @@ public class PsiUtils {
 	public static String getPath(PsiElement element) {
 		StringBuilder buff = new StringBuilder();
 		while (element instanceof JsonElement) {
-			PsiElement text =  (element instanceof JsonProperty) ?
+			PsiElement text = (element instanceof JsonProperty) ?
 				((JsonProperty) element).getNameElement() : element.getFirstChild();
 			if ((text instanceof JsonStringLiteral || text instanceof JsonReferenceExpression) &&
 				!CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED.equals(text.getText())) {
@@ -39,6 +39,10 @@ public class PsiUtils {
 
 		buff.insert(0, "/");
 		return buff.toString();
+	}
+
+	public static String getJsonPath(PsiElement element) {
+		return getPath(element);
 	}
 
 	public static PsiElement findRoot(PsiElement element) {

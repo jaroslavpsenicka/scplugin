@@ -1,4 +1,4 @@
-package cz.csas.smart.idea.action;
+package cz.csas.smart.idea;
 
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;

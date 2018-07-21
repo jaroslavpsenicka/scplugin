@@ -9,6 +9,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import cz.csas.smart.idea.ProfileComponent;
+import cz.csas.smart.idea.PsiUtils;
 import cz.csas.smart.idea.SmartCaseAPIClient;
 import cz.csas.smart.idea.model.Completion;
 import cz.csas.smart.idea.model.EditorDef;

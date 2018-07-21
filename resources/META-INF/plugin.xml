@@ -25,20 +25,21 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable groupId="tools" instance="cz.csas.smart.idea.SmartCaseConfigurable"/>
         <fileTypeFactory implementation="cz.csas.smart.idea.SmartFileTypeFactory"/>
-        <lang.parserDefinition language="JSON" implementationClass="com.intellij.json.JsonParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="JSON" implementationClass="com.intellij.json.highlighting.JsonSyntaxHighlighterFactory"/>
 
         <!-- Code style and formatting
+        <lang.parserDefinition language="JSON" implementationClass="com.intellij.json.JsonParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="JSON" implementationClass="com.intellij.json.highlighting.JsonSyntaxHighlighterFactory"/>
         <codeStyleSettingsProvider implementation="com.intellij.json.formatter.JsonCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider implementation="com.intellij.json.formatter.JsonLanguageCodeStyleSettingsProvider"/>
-        <colorSettingsPage implementation="com.intellij.json.highlighting.JsonColorsPage"/ -->
+        <colorSettingsPage implementation="com.intellij.json.highlighting.JsonColorsPage"/>
         <lang.formatter language="JSON" implementationClass="com.intellij.json.formatter.JsonFormattingBuilderModel"/>
         <lang.braceMatcher language="JSON" implementationClass="com.intellij.json.JsonBraceMatcher"/>
         <quoteHandler fileType="JSON" className="com.intellij.json.JsonQuoteHandler"/>
-        <enterHandlerDelegate implementation="com.intellij.json.formatter.JsonEnterBetweenBracesHandler"/>
+        <enterHandlerDelegate implementation="com.intellij.json.formatter.JsonEnterBetweenBracesHandler"/ -->
 
         <!-- Codeinsight -->
         <completion.contributor language="JSON" implementationClass="cz.csas.smart.idea.completion.SmartCompletionContributor"/>
+        <annotator language="JSON" implementationClass="cz.csas.smart.idea.SmartCaseAnnotator"/>
         <!-- breadcrumbsInfoProvider implementation="com.intellij.json.breadcrumbs.JsonBreadcrumbsProvider"/>
         <qualifiedNameProvider implementation="com.intellij.json.navigation.JsonQualifiedNameProvider"/>
         <lang.psiStructureViewFactory language="JSON" implementationClass="com.intellij.json.structureView.JsonStructureViewBuilderFactory"/>
@@ -72,6 +73,11 @@
 
     </extensions>
 
+    <project-components>
+        <component>
+            <implementation-class>cz.csas.smart.idea.JsonCompileTask</implementation-class>
+        </component>
+    </project-components>
 
     <actions>
         <action id="smart.upload" class="cz.csas.smart.idea.action.UploadAction"
@@ -82,6 +88,11 @@
         <action id="smart.uploadFast" class="cz.csas.smart.idea.action.UploadFastAction"
             text="Upload!" description="Upload to server">
             <keyboard-shortcut first-keystroke="control shift U" keymap="$default" replace-all="true"/>
+        </action>
+        <action id="smart.validate" class="cz.csas.smart.idea.action.ValidateAction"
+                text="Validate" description="Validate the file">
+            <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last"/>
+            <keyboard-shortcut first-keystroke="control B" keymap="$default" replace-all="true"/>
         </action>
     </actions>
 

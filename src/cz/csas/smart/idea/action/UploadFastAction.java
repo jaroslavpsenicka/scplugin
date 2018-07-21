@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.vfs.VirtualFile;
 import cz.csas.smart.idea.EnvironmentComponent;
 import cz.csas.smart.idea.SmartFileType;
+import cz.csas.smart.idea.Uploader;
 import cz.csas.smart.idea.UserComponent;
 import cz.csas.smart.idea.model.Environment;
 import cz.csas.smart.idea.ui.UploadDialog;
