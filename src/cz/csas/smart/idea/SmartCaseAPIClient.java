@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import cz.csas.smart.idea.model.EditorDef;
 import cz.csas.smart.idea.model.Environment;
 import cz.csas.smart.idea.model.UploadResponse;
+import cz.csas.smart.idea.model.Violation;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -16,6 +17,7 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,6 +86,22 @@ public class SmartCaseAPIClient {
             "application/json", "UTF-8");
         uploadMethod.setRequestEntity(new MultipartRequestEntity(new Part[] { filePart }, uploadMethod.getParams()));
         client.executeMethod(uploadMethod);
+    }
+
+    public List<Violation> validate(VirtualFile file, Environment environment) throws IOException {
+        String url = environment.getUrl();
+        if (url.startsWith("file://")) {
+            throw new IllegalStateException("cannot validate while off-line");
+        }
+
+        PostMethod validateMethod = new PostMethod(url + BASE_URI + "/validate");
+        validateMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
+        Part filePart = new FilePart("file", new ByteArrayPartSource(file.getName(), file.contentsToByteArray()),
+                "application/json", "UTF-8");
+        validateMethod.setRequestEntity(new MultipartRequestEntity(new Part[] { filePart }, validateMethod.getParams()));
+        client.executeMethod(validateMethod);
+        Type listType = new TypeToken<ArrayList<Violation>>(){}.getType();
+        return gson.fromJson(new String(validateMethod.getResponseBody()), listType);
     }
 
     public Map<String, EditorDef> getEditors() throws IOException {

@@ -17,10 +17,10 @@ public class SmartCaseAnnotator implements Annotator {
         if (currentViolations != null && currentViolations.size() > 0) {
             String path = PsiUtils.getJsonPath(element);
             if (currentViolations.containsKey(path)) {
-                System.out.println("Annotating " + element + " as " + path);
                 TextRange range = new TextRange(element.getTextRange().getStartOffset(), element.getTextRange().getEndOffset());
                 holder.createErrorAnnotation(range, currentViolations.get(path).getMessage());
             }
         }
     }
+
 }

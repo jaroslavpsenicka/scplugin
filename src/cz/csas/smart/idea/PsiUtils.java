@@ -42,7 +42,30 @@ public class PsiUtils {
 	}
 
 	public static String getJsonPath(PsiElement element) {
-		return getPath(element);
+		StringBuilder buff = new StringBuilder();
+		while (element instanceof JsonProperty) {
+			buff.insert(0, ((JsonProperty) element).getName());
+			buff.insert(0, isInArray(element) ? "[" + getIndexOf(element.getParent()) + "]." : ".");
+			element = PsiTreeUtil.getParentOfType(element, JsonProperty.class);
+		}
+
+		return buff.length() > 0 ? buff.toString().substring(1) : "";
+	}
+
+	private static boolean isInArray(PsiElement element) {
+		return element.getParent() != null && element.getParent().getParent() != null &&
+			JsonArray.class.isAssignableFrom(element.getParent().getParent().getClass());
+	}
+
+	private static Integer getIndexOf(PsiElement element) {
+		List<JsonValue> values = ((JsonArray) element.getParent()).getValueList();
+		for (int i = 0; i < values.size(); i++) {
+			if (values.get(i) == element) {
+				return i;
+			}
+		}
+
+		return null;
 	}
 
 	public static PsiElement findRoot(PsiElement element) {

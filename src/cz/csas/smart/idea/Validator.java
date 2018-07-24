@@ -11,7 +11,7 @@ public class Validator {
     public List<Violation> validate(Environment env) {
         System.out.println("Validating...");
         return Arrays.asList(
-            new Violation("/attributes", "Stupid attributes")
+            new Violation("emailConfigurations[0].emailFromFieldName", "Stupid name")
         );
     }
 }
