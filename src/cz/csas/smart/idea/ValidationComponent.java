@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class ValidationComponent {
 
-	private Map<String, Violation> currentViolations = new HashMap<>();
+	private Map<String, Map<String, Violation>> currentViolations = new HashMap<>();
 
 	private static ValidationComponent instance = new ValidationComponent();
 	public static final String AUTOVALIDATE = "cz.csas.smart.idea.autoValidate";
@@ -23,13 +23,13 @@ public class ValidationComponent {
 	public ValidationComponent() {
 	}
 
-	public Map<String, Violation> getCurrentViolations() {
-		return currentViolations;
+	public Map<String, Violation> getViolations(String file) {
+		return currentViolations.get(file);
 	}
 
-	public void setCurrentViolations(List<Violation> violations) {
-		this.currentViolations = violations.stream()
-			.collect(Collectors.toMap(Violation::getPath, v -> v));
+	public void setViolations(String file, List<Violation> violations) {
+		this.currentViolations.put(file, violations.stream()
+			.collect(Collectors.toMap(Violation::getPath, v -> v)));
 	}
 
 	public boolean isAutoValidate() {

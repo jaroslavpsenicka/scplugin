@@ -1,0 +1,24 @@
+graph {
+    padding: 20px;
+}
+
+node {
+    shape: circle;
+    size-mode: dyn-size;
+    size: 10px;
+    fill-mode: gradient-radial;
+    fill-color: #FFFC, #FFF0;
+    stroke-mode: none;
+    shadow-mode: gradient-radial;
+    shadow-color: #FFF5, #FFF0;
+    shadow-width: 5px;
+    shadow-offset: 0px, 0px;
+}
+
+edge {
+    shape: L-square-line;
+    size: 1px;
+    fill-color: #FFF3;
+    fill-mode: plain;
+    arrow-shape: none;
+}

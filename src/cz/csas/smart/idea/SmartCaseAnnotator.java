@@ -13,7 +13,8 @@ public class SmartCaseAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        Map<String, Violation> currentViolations = ValidationComponent.getInstance().getCurrentViolations();
+        String file = element.getContainingFile().getName();
+        Map<String, Violation> currentViolations = ValidationComponent.getInstance().getViolations(file);
         if (currentViolations != null && currentViolations.size() > 0) {
             String path = PsiUtils.getJsonPath(element);
             if (currentViolations.containsKey(path)) {

@@ -26,6 +26,9 @@
         <applicationConfigurable groupId="tools" instance="cz.csas.smart.idea.SmartCaseConfigurable"/>
         <fileTypeFactory implementation="cz.csas.smart.idea.SmartFileTypeFactory"/>
 
+        <toolWindow id="Graph" icon="/graph/layout.png" anchor="right" factoryClass="cz.csas.smart.idea.GraphToolWindowFactory"/>
+
+
         <!-- Code style and formatting
         <lang.parserDefinition language="JSON" implementationClass="com.intellij.json.JsonParserDefinition"/>
         <lang.syntaxHighlighterFactory language="JSON" implementationClass="com.intellij.json.highlighting.JsonSyntaxHighlighterFactory"/>

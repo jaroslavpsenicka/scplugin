@@ -4,7 +4,11 @@ import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.compiler.CompileTask;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import cz.csas.smart.idea.model.Environment;
+
+import java.util.Arrays;
 
 public class JsonCompileTask implements CompileTask {
 
@@ -16,22 +20,14 @@ public class JsonCompileTask implements CompileTask {
     public boolean execute(CompileContext context) {
         ValidationComponent validationComponent = ValidationComponent.getInstance();
         if (validationComponent.isAutoValidate()) {
-            Validator validator = new Validator();
             Environment env = EnvironmentComponent.getInstance().getActiveEnvironment();
-            validationComponent.setCurrentViolations(validator.validate(env));
-
-
+            FileEditor[] editors = FileEditorManager.getInstance(context.getProject()).getAllEditors();
+            Arrays.stream(editors).forEach(editor -> {
+                VirtualFile file = editor.getFile();
+                Validator validator = new Validator(file);
+                validationComponent.setViolations(file.getName(), validator.validate(env));
+            });
         }
-
-//        System.out.println("Compiling: " + context.getProject());
-//        context.addMessage(CompilerMessageCategory.ERROR, "Whoa", null, -1, -1);
-//
-//        try {
-//            FileEditor[] editors = FileEditorManager.getInstance(context.getProject()).getAllEditors();
-//            System.out.println("Editors: " + new String(editors[0].getFile().contentsToByteArray()));
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
 
         return false;
     }

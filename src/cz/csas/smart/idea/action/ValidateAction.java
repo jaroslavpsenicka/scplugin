@@ -7,17 +7,14 @@ import cz.csas.smart.idea.UserComponent;
 import cz.csas.smart.idea.ValidationComponent;
 import cz.csas.smart.idea.Validator;
 import cz.csas.smart.idea.model.Environment;
-import cz.csas.smart.idea.model.Violation;
 import cz.csas.smart.idea.ui.ValidateDialog;
 import org.apache.commons.lang.StringUtils;
-
-import java.util.List;
 
 public class ValidateAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        Validator validator = new Validator();
+        Validator validator = new Validator(event.getDataContext());
         String user = UserComponent.getInstance().getUser();
         Environment env = EnvironmentComponent.getInstance().getActiveEnvironment();
         if (StringUtils.isEmpty(user)) {
@@ -28,7 +25,7 @@ public class ValidateAction extends AnAction {
             }
         }
 
-        ValidationComponent.getInstance().setCurrentViolations(validator.validate(env));
+        ValidationComponent.getInstance().setViolations(validator.getFile().getName(), validator.validate(env));
     }
 
 }
