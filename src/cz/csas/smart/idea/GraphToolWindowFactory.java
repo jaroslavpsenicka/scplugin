@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 import static gherkin.util.FixJava.readResource;
+import static gherkin.util.FixJava.readStream;
 
 public class GraphToolWindowFactory implements ToolWindowFactory {
 
@@ -41,7 +42,8 @@ public class GraphToolWindowFactory implements ToolWindowFactory {
 
         graph.setAttribute("ui.antialias");
         graph.setAttribute("ui.quality");
-        graph.addAttribute("ui.stylesheet", readResource("/graph.css"));
+        String stylesheet = new String(readStream(getClass().getResourceAsStream("/graph.css")));
+        graph.addAttribute("ui.stylesheet", stylesheet);
 
         this.graphViewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         this.graphViewer.enableAutoLayout(new HierarchicalLayout());

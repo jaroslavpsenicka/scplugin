@@ -1,24 +1,24 @@
+# See http://graphstream-project.org/doc/Advanced-Concepts/GraphStream-CSS-Reference
+
 graph {
     padding: 20px;
 }
 
 node {
     shape: circle;
-    size-mode: dyn-size;
-    size: 10px;
-    fill-mode: gradient-radial;
-    fill-color: #FFFC, #FFF0;
-    stroke-mode: none;
-    shadow-mode: gradient-radial;
-    shadow-color: #FFF5, #FFF0;
-    shadow-width: 5px;
-    shadow-offset: 0px, 0px;
+    size: 25px;
+    fill-color: #FFF;
+    stroke-mode: plain;
+    stroke-color: #999;
+    stroke-width: 5px;
+    text-offset: 20px;
+
 }
 
 edge {
-    shape: L-square-line;
     size: 1px;
-    fill-color: #FFF3;
+    fill-color: #999;
     fill-mode: plain;
-    arrow-shape: none;
+    arrow-shape: arrow;
+    arrow-size: 15px, 15px;
 }
