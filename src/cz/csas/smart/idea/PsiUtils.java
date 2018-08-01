@@ -6,10 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import cz.csas.smart.idea.model.Completion;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.strip;
@@ -109,19 +106,30 @@ public class PsiUtils {
 	}
 
 	public static List<Completion.Value> getTasks(PsiElement element, String ofType) {
-		Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
+		Optional<JsonProperty> tasksPropOpt = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
 			.filter(jp -> "tasks".equals(jp.getName()))
 			.findFirst();
-		if (attributesProperty.isPresent()) {
-			JsonProperty attributesElement = attributesProperty.get();
-			return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
-				.filter(jp -> "name".equals(jp.getName()))
-				.map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
-				.map(val -> val.requiredIfType(ofType))
-				.collect(Collectors.toList());
+		if (tasksPropOpt.isPresent()) {
+			if (tasksPropOpt.get().getValue() instanceof JsonArray) {
+				return findChildren((JsonArray) tasksPropOpt.get().getValue(), JsonObject.class).stream()
+					.map(a -> Arrays.stream(a.getChildren())
+						.filter(o -> o instanceof JsonProperty)
+						.map(jp -> (JsonProperty) jp)
+						.filter(jp -> "name".equals(jp.getName()))
+						.map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
+						.findFirst().orElse(null))
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
+			}
 		}
 
 		return Collections.emptyList();
+	}
+
+	private static List<JsonValue> findChildren(JsonArray element, Class<JsonObject> objectClass) {
+		return element.getValueList().stream()
+			.filter(o -> objectClass.isAssignableFrom(o.getClass()))
+			.collect(Collectors.toList());
 	}
 
 	private static String findAttributeType(JsonProperty element) {

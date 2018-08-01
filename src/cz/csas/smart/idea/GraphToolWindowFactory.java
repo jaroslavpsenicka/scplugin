@@ -1,57 +1,62 @@
 package cz.csas.smart.idea;
 
+import com.intellij.openapi.compiler.CompilerManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerAdapter;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentFactory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.util.messages.MessageBus;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.layout.HierarchicalLayout;
-import org.graphstream.ui.swingViewer.DefaultView;
-import org.graphstream.ui.swingViewer.basicRenderer.SwingBasicGraphRenderer;
 import org.graphstream.ui.view.Viewer;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-
-import static gherkin.util.FixJava.readResource;
 import static gherkin.util.FixJava.readStream;
 
 public class GraphToolWindowFactory implements ToolWindowFactory {
 
     private ToolWindow toolWindow;
-    private JComponent toolWindowContent;
-    private Viewer graphViewer;
-    private DefaultView defaultView;
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+
+        MessageBus messageBus = project.getMessageBus();
+        messageBus.connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
+            public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+                VirtualFile file = event.getNewFile();
+                reloadGraph(file != null ? PsiManager.getInstance(project).findFile(file) : null);
+            }
+        });
+
+        CompilerManager.getInstance(project).addAfterTask(compileContext -> {
+            VirtualFile[] files = FileEditorManager.getInstance(project).getSelectedFiles();
+            if (files.length > 0) reloadGraph(PsiManager.getInstance(project).findFile(files[0]));
+            return true;
+        });
+
         this.toolWindow = toolWindow;
-
-        Graph graph = new SingleGraph("Process Diagram");
-        Node top = graph.addNode("A");
-        top.addAttribute("ui.class", "important");
-        top.addAttribute("ui.label", "A Node");
-        graph.addNode("B" );
-        graph.addNode("C" );
-        graph.addEdge("AB", "A", "B");
-        graph.addEdge("BC", "B", "C");
-        graph.addEdge("CA", "C", "A");
-
-        graph.setAttribute("ui.antialias");
-        graph.setAttribute("ui.quality");
-        String stylesheet = new String(readStream(getClass().getResourceAsStream("/graph.css")));
-        graph.addAttribute("ui.stylesheet", stylesheet);
-
-        this.graphViewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        this.graphViewer.enableAutoLayout(new HierarchicalLayout());
-        this.defaultView = new DefaultView(graphViewer, "graph", new SwingBasicGraphRenderer());
-        this.defaultView = (DefaultView) graphViewer.addDefaultView(false);
-
-        this.toolWindow.getComponent().add(defaultView);
     }
 
+    private void reloadGraph(PsiFile file) {
+        toolWindow.getComponent().removeAll();
+        if (file != null) {
+            Graph graph = new SingleGraph("Process Diagram");
+            graph.setAttribute("ui.antialias");
+            graph.setAttribute("ui.quality");
+            String stylesheet = new String(readStream(getClass().getResourceAsStream("/graph.css")));
+            graph.addAttribute("ui.stylesheet", stylesheet);
+
+            PsiUtils.getTasks(file.getFirstChild(), null).forEach(task -> graph.addNode(task.getText()));
+            Viewer graphViewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+            graphViewer.enableAutoLayout();
+            toolWindow.getComponent().add(graphViewer.addDefaultView(false));
+        }
+    }
 
 }
