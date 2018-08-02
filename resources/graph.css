@@ -9,15 +9,14 @@ node {
     size: 25px;
     fill-color: #FFF;
     stroke-mode: plain;
-    stroke-color: #999;
+    stroke-color: #555;
     stroke-width: 5px;
     text-offset: 20px;
-
 }
 
 edge {
     size: 1px;
-    fill-color: #999;
+    fill-color: #555;
     fill-mode: plain;
     arrow-shape: arrow;
     arrow-size: 15px, 15px;

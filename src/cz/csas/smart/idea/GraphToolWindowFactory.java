@@ -1,6 +1,9 @@
 package cz.csas.smart.idea;
 
+import com.intellij.openapi.compiler.CompilationStatusListener;
+import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.compiler.CompilerManager;
+import com.intellij.openapi.compiler.CompilerTopics;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerAdapter;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
@@ -34,10 +37,11 @@ public class GraphToolWindowFactory implements ToolWindowFactory {
             }
         });
 
-        CompilerManager.getInstance(project).addAfterTask(compileContext -> {
-            VirtualFile[] files = FileEditorManager.getInstance(project).getSelectedFiles();
-            if (files.length > 0) reloadGraph(PsiManager.getInstance(project).findFile(files[0]));
-            return true;
+        messageBus.connect().subscribe(CompilerTopics.COMPILATION_STATUS, new CompilationStatusListener() {
+            public void compilationFinished(boolean aborted, int errors, int warnings, CompileContext compileContext) {
+                VirtualFile[] files = FileEditorManager.getInstance(project).getSelectedFiles();
+                if (files.length > 0) reloadGraph(PsiManager.getInstance(project).findFile(files[0]));
+            }
         });
 
         this.toolWindow = toolWindow;
