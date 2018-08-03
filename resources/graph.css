@@ -7,7 +7,6 @@ graph {
 node {
     shape: circle;
     size: 25px;
-    fill-color: #FFF;
     stroke-mode: plain;
     stroke-color: #555;
     stroke-width: 5px;
@@ -16,7 +15,6 @@ node {
 
 edge {
     size: 1px;
-    fill-color: #555;
     fill-mode: plain;
     arrow-shape: arrow;
     arrow-size: 15px, 15px;
