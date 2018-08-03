@@ -5,6 +5,9 @@ import com.intellij.json.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import cz.csas.smart.idea.model.Completion;
+import cz.csas.smart.idea.model.Task;
+import cz.csas.smart.idea.model.Transition;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -105,7 +108,7 @@ public class PsiUtils {
 		return Collections.emptyList();
 	}
 
-	public static List<Completion.Value> getTasks(PsiElement element, String ofType) {
+	public static List<Task> getTasks(PsiElement element, String ofType) {
 		Optional<JsonProperty> tasksPropOpt = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
 			.filter(jp -> "tasks".equals(jp.getName()))
 			.findFirst();
@@ -116,7 +119,7 @@ public class PsiUtils {
 						.filter(o -> o instanceof JsonProperty)
 						.map(jp -> (JsonProperty) jp)
 						.filter(jp -> "name".equals(jp.getName()))
-						.map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
+						.map(jp -> new Task(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
 						.findFirst().orElse(null))
 					.filter(Objects::nonNull)
 					.collect(Collectors.toList());
@@ -124,6 +127,52 @@ public class PsiUtils {
 		}
 
 		return Collections.emptyList();
+	}
+
+	public static List<Transition> getTransitions(PsiElement element) {
+		Optional<JsonProperty> tranPropOpt = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
+			.filter(jp -> "transitions".equals(jp.getName()))
+			.findFirst();
+		if (tranPropOpt.isPresent()) {
+			if (tranPropOpt.get().getValue() instanceof JsonArray) {
+				return findChildren((JsonArray) tranPropOpt.get().getValue(), JsonObject.class).stream()
+					.map(o -> new Transition(findName(o), findLink(o,"from"), findLink(o, "to")))
+					.collect(Collectors.toList());
+			}
+		}
+
+		return Collections.emptyList();
+	}
+
+	private static String findName(JsonValue value) {
+		return Arrays.stream(value.getChildren())
+			.filter(o -> o instanceof JsonProperty)
+			.map(jp -> (JsonProperty) jp)
+			.filter(jp -> "name".equals(jp.getName()))
+			.map(jp -> jp.getValue().getText())
+			.findFirst().orElse(null);
+	}
+
+	private static String findLink(JsonValue value, String linkName) {
+		Optional<JsonProperty> from = PsiTreeUtil.findChildrenOfType(value, JsonProperty.class).stream()
+			.filter(jp -> linkName.equals(jp.getName()))
+			.findFirst();
+		if (from.isPresent()) {
+			String type = PsiTreeUtil.findChildrenOfType(from.get(), JsonProperty.class).stream()
+				.filter(jp -> "type".equals(jp.getName()))
+				.map(jp -> StringUtils.strip(jp.getValue().getText(), "\""))
+				.findFirst().orElse(null);
+			if ("TASK".equals(type)) {
+				return PsiTreeUtil.findChildrenOfType(from.get(), JsonProperty.class).stream()
+					.filter(jp -> "name".equals(jp.getName()))
+					.map(jp -> jp.getValue().getText())
+					.findFirst().orElse(null);
+			}
+
+			return type;
+		}
+
+		return null;
 	}
 
 	private static List<JsonValue> findChildren(JsonArray element, Class<JsonObject> objectClass) {

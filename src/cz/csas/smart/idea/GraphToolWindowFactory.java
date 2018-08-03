@@ -2,7 +2,6 @@ package cz.csas.smart.idea;
 
 import com.intellij.openapi.compiler.CompilationStatusListener;
 import com.intellij.openapi.compiler.CompileContext;
-import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.compiler.CompilerTopics;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerAdapter;
@@ -16,6 +15,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.messages.MessageBus;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
 import org.jetbrains.annotations.NotNull;
@@ -50,13 +50,20 @@ public class GraphToolWindowFactory implements ToolWindowFactory {
     private void reloadGraph(PsiFile file) {
         toolWindow.getComponent().removeAll();
         if (file != null) {
-            Graph graph = new SingleGraph("Process Diagram");
-            graph.setAttribute("ui.antialias");
-            graph.setAttribute("ui.quality");
+            Graph graph = new DefaultGraph(file.getName());
+            graph.setStrict(false);
             String stylesheet = new String(readStream(getClass().getResourceAsStream("/graph.css")));
             graph.addAttribute("ui.stylesheet", stylesheet);
 
-            PsiUtils.getTasks(file.getFirstChild(), null).forEach(task -> graph.addNode(task.getText()));
+            graph.addNode("START").addAttribute("ui.label", "Start");
+            graph.addNode("END").addAttribute("ui.label", "End");
+            PsiUtils.getTasks(file.getFirstChild(), null)
+                .forEach(t -> graph.addNode(t.getName())
+                    .addAttribute("ui.label", t.getName()));
+            PsiUtils.getTransitions(file.getFirstChild())
+                .forEach(t -> graph.addEdge(t.getName(), t.getSource(), t.getTarget())
+                    .addAttribute("ui.label", t.getName()));
+
             Viewer graphViewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
             graphViewer.enableAutoLayout();
             toolWindow.getComponent().add(graphViewer.addDefaultView(false));

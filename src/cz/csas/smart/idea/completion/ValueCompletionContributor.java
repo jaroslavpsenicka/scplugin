@@ -58,7 +58,9 @@ public class ValueCompletionContributor extends CompletionProvider<CompletionPar
 			} else if (ACTIVITY_NAME.equalsIgnoreCase(value.getType())) {
 				return PsiUtils.getActivities(parameters.getPosition());
 			} else if (TASK_NAME.equalsIgnoreCase(value.getType())) {
-				return PsiUtils.getTasks(parameters.getPosition(), value.getOf());
+				return PsiUtils.getTasks(parameters.getPosition(), value.getOf()).stream()
+					.map(t -> new Completion.Value(t.getName(), t.getType()))
+					.collect(Collectors.toList());
 			} else if (USER_NAME.equalsIgnoreCase(value.getType())) {
 				return getCurrentUsername();
 			} else if (CURRENT_TIME.equalsIgnoreCase(value.getType())) {
