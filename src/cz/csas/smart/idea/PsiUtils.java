@@ -121,7 +121,7 @@ public class PsiUtils {
 						.filter(jp -> "name".equals(jp.getName()))
 						.map(jp -> new Task(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
 						.findFirst().orElse(null))
-					.filter(Objects::nonNull)
+					.filter(t -> t.getName() != null)
 					.collect(Collectors.toList());
 			}
 		}
@@ -137,6 +137,7 @@ public class PsiUtils {
 			if (tranPropOpt.get().getValue() instanceof JsonArray) {
 				return findChildren((JsonArray) tranPropOpt.get().getValue(), JsonObject.class).stream()
 					.map(o -> new Transition(findName(o), findLink(o,"from"), findLink(o, "to")))
+					.filter(t -> t.getName() != null && t.getSource() != null && t.getTarget() != null)
 					.collect(Collectors.toList());
 			}
 		}
