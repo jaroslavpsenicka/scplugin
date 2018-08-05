@@ -24,6 +24,7 @@ public class SmartCaseConfigurable implements Configurable {
     private JButton profileReload;
 	private JButton profileOpenInExplorer;
 	private JCheckBox deployCheckBox;
+	private JCheckBox preProcessCheckBox;
     private JCheckBox quotesCheckbox;
 	private JCheckBox autoValidateCheckbox;
 	private boolean isDirty;
@@ -69,6 +70,7 @@ public class SmartCaseConfigurable implements Configurable {
 	@Override
 	public void apply() {
 		EnvironmentComponent.getInstance().setActiveEnvironment((Environment) environmentCombo.getSelectedItem());
+		EnvironmentComponent.getInstance().setPreProcess(preProcessCheckBox.isSelected());
 		EnvironmentComponent.getInstance().setAutoDeploy(deployCheckBox.isSelected());
         ProfileComponent.getInstance().setActiveProfile((Profile) profileCombo.getSelectedItem());
         ProfileComponent.getInstance().setUseQuotes(quotesCheckbox.isSelected());
@@ -79,6 +81,7 @@ public class SmartCaseConfigurable implements Configurable {
 	@Override
 	public void reset() {
 		environmentCombo.setSelectedItem(EnvironmentComponent.getInstance().getActiveEnvironment());
+		preProcessCheckBox.setSelected(EnvironmentComponent.getInstance().isPreProcess());
 		deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
 		profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
         quotesCheckbox.setSelected(ProfileComponent.getInstance().useQuotes());
@@ -106,11 +109,15 @@ public class SmartCaseConfigurable implements Configurable {
 		environmentCombo.setSelectedItem(EnvironmentComponent.getInstance().getActiveEnvironment());
 		environmentCombo.addActionListener(actionEvent -> isDirty = true);
 
+		preProcessCheckBox = new JCheckBox("Preprocess before upload");
+		preProcessCheckBox.setSelected(EnvironmentComponent.getInstance().isPreProcess());
+
 		deployCheckBox = new JCheckBox("Auto deploy after successful upload");
 		deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
 
 		JPanel environmentPanel = new JPanel(new BorderLayout(5, 5));
-		environmentPanel.add(environmentCombo, BorderLayout.CENTER);
+		environmentPanel.add(environmentCombo, BorderLayout.NORTH);
+		environmentPanel.add(preProcessCheckBox, BorderLayout.CENTER);
 		environmentPanel.add(deployCheckBox, BorderLayout.SOUTH);
 		return environmentPanel;
 	}

@@ -58,6 +58,9 @@
         <extendWordSelectionHandler implementation="com.intellij.json.editor.selection.JsonStringLiteralSelectionHandler"/>
         <basicWordSelectionFilter implementation="com.intellij.json.editor.selection.JsonBasicWordSelectionFilter"/ -->
 
+        <!-- Reference support -->
+        <psi.referenceContributor implementation="cz.csas.smart.idea.SmartReferenceContributor"/>
+
         <!-- Annotators -->
         <!-- annotator language="JSON" implementationClass="com.intellij.json.codeinsight.JsonLiteralAnnotator"/ -->
 
@@ -87,10 +90,6 @@
             text="Upload" description="Upload to server, with options">
             <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last"/>
             <keyboard-shortcut first-keystroke="control U" keymap="$default" replace-all="true"/>
-        </action>
-        <action id="smart.uploadFast" class="cz.csas.smart.idea.action.UploadFastAction"
-            text="Upload!" description="Upload to server">
-            <keyboard-shortcut first-keystroke="control shift U" keymap="$default" replace-all="true"/>
         </action>
         <action id="smart.validate" class="cz.csas.smart.idea.action.ValidateAction"
                 text="Validate" description="Validate the file">

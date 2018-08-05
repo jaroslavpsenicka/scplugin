@@ -15,6 +15,7 @@ public class EnvironmentComponent {
 
 	public static final String ACTIVE_ENVIRONMENT_NAME = "cz.csas.smart.idea.activeEnvironment";
 	public static final String AUTODEPLOY = "cz.csas.smart.idea.autoDeploy";
+	public static final String PREPROCESS = "cz.csas.smart.idea.preProcess";
 
 	public static final EnvironmentComponent getInstance() {
 		return instance;
@@ -54,5 +55,14 @@ public class EnvironmentComponent {
 
 	public void setAutoDeploy(boolean autoDeploy) {
 		PropertiesComponent.getInstance().setValue(AUTODEPLOY, String.valueOf(autoDeploy));
+	}
+
+	public boolean isPreProcess() {
+		String value = PropertiesComponent.getInstance().getValue(PREPROCESS);
+		return (value != null) ? Boolean.valueOf(value) : true;
+	}
+
+	public void setPreProcess(boolean preProcess) {
+		PropertiesComponent.getInstance().setValue(PREPROCESS, String.valueOf(preProcess));
 	}
 }
