@@ -60,6 +60,7 @@
 
         <!-- Reference support -->
         <psi.referenceContributor implementation="cz.csas.smart.idea.SmartReferenceContributor"/>
+        <lang.findUsagesProvider language="JSON" implementationClass="cz.csas.smart.idea.SmartFindUsagesProvider"/>
 
         <!-- Annotators -->
         <!-- annotator language="JSON" implementationClass="com.intellij.json.codeinsight.JsonLiteralAnnotator"/ -->
