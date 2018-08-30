@@ -1,0 +1,101 @@
+{
+  "name": "gensys",
+  "label": "Genesys 1",
+  "description": "Test case for Genesys",
+  "revision": 1,
+  "caseType": "GENESYS1",
+  "createdBy": "ext94087",
+  "createDate": 1448883310465,
+  "presentationSubject": "\"Genesys 1, \" + _case.cidla",
+  "attributes": [
+    {
+      "name": "hello",
+      "type": "STRING",
+      "defaultValue": "Smart"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "Define",
+      "label": "Definice",
+      "description": "Prvni task.",
+      "configurations": [
+        {
+          "condition": "true",
+          "potentialOwner": "BRASIL_UNO_SMART_GenesysProc1",
+          "latestAssigningDate": {
+            "duration": "PT30M",
+            "unit": "LABOURUNIT"
+          },
+          "dueDate": {
+            "duration": "PT8H",
+            "unit": "LABOURUNIT",
+            "type": "NOW"
+          }
+        }
+      ],
+      "activities": [
+        {
+          "name": "small",
+          "label": "Prvni Aktivita, Hura!!!",
+          "description": "Prvni description pro activitu",
+          "visible": "true",
+          "fields": [
+            {
+              "name": "hello",
+              "label": "Hello",
+              "selector": {
+                "attributes": {
+                  "value": {
+                    "name": "hello"
+                  }
+                }
+              },
+              "editor": {
+                "name": "string-field"
+              }
+            }
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "complete",
+          "label": "Hotovo",
+          "type": "NEXT",
+          "primary": true
+        },
+        {
+          "name": "save",
+          "label": "Uložit",
+          "type": "SAVE"
+        }
+      ]
+    }
+  ],
+  "overview": {
+    "name": "OVERVIEW",
+    "label": "Detail pripadu",
+    "activities": []
+  },
+  "transitions": [
+    {
+      "name": "StartToDefinition",
+      "from": {
+        "type": "START"
+      },
+      "to": {
+        "name": "Define"
+      }
+    },
+    {
+      "name": "ToEnd",
+      "from": {
+        "name": "Define"
+      },
+      "to": {
+        "type": "END"
+      }
+    }
+  ]
+}
