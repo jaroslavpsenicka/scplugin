@@ -99,7 +99,13 @@ public class SmartCaseAPIClient {
         client.executeMethod(validateMethod);
         Type listType = new TypeToken<ArrayList<Violation>>() {
         }.getType();
-        return gson.fromJson(new String(validateMethod.getResponseBody()), listType);
+        final byte[] responseBody = validateMethod.getResponseBody();
+
+        if (responseBody != null) {
+            return gson.fromJson(new String(responseBody), listType);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public Map<String, EditorDef> getEditors() throws IOException {
