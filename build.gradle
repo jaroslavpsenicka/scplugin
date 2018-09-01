@@ -33,7 +33,7 @@ dependencies {
 }
 
 intellij {
-    version '2018.1.1'
+    version '2016.2'
     plugins 'coverage' //Bundled plugin dependencies
     pluginName 'scplugin'
     updateSinceUntilBuild = true
@@ -43,7 +43,7 @@ patchPluginXml {
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
 
-    sinceBuild('181.1')
+    sinceBuild('IC-162')
     untilBuild('182.*')
 }
 
