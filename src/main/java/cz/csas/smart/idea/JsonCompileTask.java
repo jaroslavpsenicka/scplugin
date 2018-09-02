@@ -25,11 +25,13 @@ public class JsonCompileTask implements CompileTask {
 
             final VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
             Arrays.stream(selectedFiles).forEach(file -> {
-                Validator validator = new Validator(file);
-                validationComponent.setViolations(file.getName(), validator.validate(env));
+                if (file.getName().endsWith(".smart")) {
+                    Validator validator = new Validator(file);
+                    validationComponent.setViolations(file.getName(), validator.validate(env));
+                }
             });
         }
 
-        return false;
+        return true;
     }
 }
