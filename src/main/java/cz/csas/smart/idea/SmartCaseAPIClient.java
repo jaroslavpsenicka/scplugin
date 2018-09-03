@@ -94,14 +94,14 @@ public class SmartCaseAPIClient {
         PostMethod validateMethod = new PostMethod(url + BASE_URI + "/validate");
         validateMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         Part filePart = new FilePart("file", new ByteArrayPartSource(file.getName(), file.contentsToByteArray()),
-                "application/json", "UTF-8");
+                "multipart/form-data", "UTF-8");
         validateMethod.setRequestEntity(new MultipartRequestEntity(new Part[]{filePart}, validateMethod.getParams()));
         client.executeMethod(validateMethod);
         Type listType = new TypeToken<ArrayList<Violation>>() {
         }.getType();
         final byte[] responseBody = validateMethod.getResponseBody();
 
-        if (responseBody != null) {
+        if (responseBody != null && validateMethod.getStatusCode() == 200) {
             return gson.fromJson(new String(responseBody), listType);
         } else {
             return new ArrayList<>();
