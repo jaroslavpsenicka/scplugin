@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
 public class Validator {
 
     private final VirtualFile file;
@@ -28,12 +29,12 @@ public class Validator {
     }
 
     public List<Violation> validate(Environment env) {
-        JOptionPane.setDefaultLocale(Locale.forLanguageTag("cs-CZ"));
         try {
+            JOptionPane.setDefaultLocale(Locale.forLanguageTag("cs-CZ"));
             SmartCaseAPIClient client = SmartCaseAPIClient.getInstance();
             return client.validate(file, env);
         } catch (UnknownHostException ex) {
-            JOptionPane.showMessageDialog(null, "Nepodařilo se připojit k " + env.getUrl() + ". Jste připojeni k síti a běží server SmartCae?");
+            JOptionPane.showMessageDialog(null, "Nepodařilo se připojit k " + env.getUrl() + ". Jste připojeni k síti a běží server SmartCase?");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Error validating file, " + ex.toString());
         }
