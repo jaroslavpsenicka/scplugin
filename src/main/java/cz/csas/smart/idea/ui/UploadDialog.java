@@ -55,7 +55,7 @@ public class UploadDialog extends DialogWrapper {
         deployCheckBox.addItemListener(l -> hotdeployCheckBox.setEnabled(deployCheckBox.isSelected()));
         hotdeployCheckBox = new JCheckBox("Hotdeploy");
         hotdeployCheckBox.setEnabled(deployCheckBox.isSelected());
-
+        hotdeployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
         String user = UserComponent.getInstance().getUser();
         usernameField = new JTextField();
         usernameField.setText(user);
