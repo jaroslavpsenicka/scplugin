@@ -45,8 +45,8 @@ public class Uploader implements HyperlinkListener {
                     .createBalloon()
                     .show(RelativePoint.getNorthEastOf(statusBar.getComponent()), Balloon.Position.atRight);
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error uploading file, " + ex.toString());
+        } catch (Exception | AssertionError ex) {
+            JOptionPane.showMessageDialog(null, "Error uploading file, " + ex.getMessage());
         }
     }
 
