@@ -84,7 +84,7 @@ public class SmartCaseAPIClient {
                 "application/json", "UTF-8");
         uploadMethod.setRequestEntity(new MultipartRequestEntity(new Part[]{filePart}, uploadMethod.getParams()));
         client.executeMethod(uploadMethod);
-        Assert.assertNotEquals(uploadMethod.getStatusCode() == 500, "Server error");
+        Assert.assertNotEquals("Server error", 500, uploadMethod.getStatusCode());
     }
 
     public List<Violation> validate(VirtualFile file, Environment environment) throws IOException {
