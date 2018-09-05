@@ -25,7 +25,7 @@ public class JsonCompileTask implements CompileTask {
 
             final VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
             Arrays.stream(selectedFiles).forEach(file -> {
-                if (file.getName().endsWith(".smart")) {
+                if (SmartFileType.INSTANCE.equals(file.getFileType())) {
                     Validator validator = new Validator(file);
                     validationComponent.setViolations(file.getName(), validator.validate(env));
                 }

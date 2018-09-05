@@ -14,15 +14,15 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.messages.MessageBus;
+import org.apache.commons.io.IOUtils;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.ui.layout.HierarchicalLayout;
 import org.graphstream.ui.view.Viewer;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.HashMap;
-
-import static gherkin.util.FixJava.readStream;
 
 public class GraphToolWindowFactory implements ToolWindowFactory {
 
@@ -31,6 +31,7 @@ public class GraphToolWindowFactory implements ToolWindowFactory {
     }
 
     private ToolWindow toolWindow;
+    private String stylesheet;
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
@@ -51,14 +52,18 @@ public class GraphToolWindowFactory implements ToolWindowFactory {
         });
 
         this.toolWindow = toolWindow;
+        try {
+            stylesheet = new String(IOUtils.toString(getClass().getResourceAsStream("/graph.css")));
+        } catch (IOException ex) {
+            System.out.println("Error reading graph stylesheet");
+        }
     }
 
-    private void reloadGraph(PsiFile file) {
+    private void reloadGraph(PsiFile file)  {
         toolWindow.getComponent().removeAll();
         if (file != null) {
             Graph graph = new DefaultGraph(file.getName());
             graph.setStrict(false);
-            String stylesheet = new String(readStream(getClass().getResourceAsStream("/graph.css")));
             graph.addAttribute("ui.stylesheet", stylesheet);
             graph.addNode("START").addAttributes(new HashMap<String, Object>() {{
                 put("ui.label", "Start");

@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/scplugin.iml" filepath="$PROJECT_DIR$/scplugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scplugin_main.iml" filepath="$PROJECT_DIR$/.idea/modules/scplugin_main.iml" group="scplugin" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scplugin_test.iml" filepath="$PROJECT_DIR$/.idea/modules/scplugin_test.iml" group="scplugin" />
     </modules>
   </component>
 </project>

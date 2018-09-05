@@ -2,6 +2,7 @@ package cz.csas.smart.idea;
 
 import com.intellij.ide.util.PropertiesComponent;
 import cz.csas.smart.idea.model.Violation;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,9 @@ public class ValidationComponent {
 
     public void setViolations(String file, List<Violation> violations) {
         this.currentViolations.put(file, violations.stream()
-                .collect(Collectors.toMap(Violation::getPath, v -> v)));
+            // TODO root violations nadrátovat na root JSON objektu
+            .filter(v -> StringUtils.isNotEmpty(v.getPath()))
+            .collect(Collectors.toMap(Violation::getPath, v -> v)));
     }
 
     public boolean isAutoValidate() {

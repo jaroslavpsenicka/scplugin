@@ -1,5 +1,6 @@
 package cz.csas.smart.idea;
 
+import com.google.common.net.MediaType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -14,6 +15,7 @@ import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.http.HttpStatus;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class SmartCaseAPIClient {
         PostMethod uploadMethod = new PostMethod(url + BASE_URI);
         uploadMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         Part filePart = new FilePart("file", new ByteArrayPartSource(file.getName(), file.contentsToByteArray()),
-                "application/json", "UTF-8");
+            MediaType.JSON_UTF_8.type(), "UTF-8");
         uploadMethod.setRequestEntity(new MultipartRequestEntity(new Part[]{filePart}, uploadMethod.getParams()));
         client.executeMethod(uploadMethod);
         return gson.fromJson(new String(uploadMethod.getResponseBody()), UploadResponse.class);
@@ -97,17 +99,16 @@ public class SmartCaseAPIClient {
         PostMethod validateMethod = new PostMethod(url + BASE_URI + "/validate");
         validateMethod.setRequestHeader("X-Smart-Username", UserComponent.getInstance().getUser());
         Part filePart = new FilePart("file", new ByteArrayPartSource(file.getName(), file.contentsToByteArray()),
-                "multipart/form-data", "UTF-8");
+            "multipart/form-data", "UTF-8");
         validateMethod.setRequestEntity(new MultipartRequestEntity(new Part[]{filePart}, validateMethod.getParams()));
         client.executeMethod(validateMethod);
-        Type listType = new TypeToken<ArrayList<Violation>>() {
-        }.getType();
-        final byte[] responseBody = validateMethod.getResponseBody();
 
-        if (responseBody != null && validateMethod.getStatusCode() == 200) {
+        if (validateMethod.getStatusCode() == HttpStatus.SC_OK) {
+            Type listType = new TypeToken<ArrayList<Violation>>() {}.getType();
+            final byte[] responseBody = validateMethod.getResponseBody();
             return gson.fromJson(new String(responseBody), listType);
         } else {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 
