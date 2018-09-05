@@ -14,6 +14,7 @@ import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.junit.Assert;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -83,6 +84,7 @@ public class SmartCaseAPIClient {
                 "application/json", "UTF-8");
         uploadMethod.setRequestEntity(new MultipartRequestEntity(new Part[]{filePart}, uploadMethod.getParams()));
         client.executeMethod(uploadMethod);
+        Assert.assertNotEquals(uploadMethod.getStatusCode() == 500, "Server error");
     }
 
     public List<Violation> validate(VirtualFile file, Environment environment) throws IOException {

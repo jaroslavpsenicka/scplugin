@@ -24,6 +24,7 @@ public class SmartCaseConfigurable implements Configurable {
     private JButton profileReload;
     private JButton profileOpenInExplorer;
     private JCheckBox deployCheckBox;
+    private JCheckBox hotDeployCheckBox;
     private JCheckBox preProcessCheckBox;
     private JCheckBox quotesCheckbox;
     private JCheckBox autoValidateCheckbox;
@@ -72,6 +73,7 @@ public class SmartCaseConfigurable implements Configurable {
         EnvironmentComponent.getInstance().setActiveEnvironment((Environment) environmentCombo.getSelectedItem());
         EnvironmentComponent.getInstance().setPreProcess(preProcessCheckBox.isSelected());
         EnvironmentComponent.getInstance().setAutoDeploy(deployCheckBox.isSelected());
+        EnvironmentComponent.getInstance().setHotDeploy(hotDeployCheckBox.isSelected());
         ProfileComponent.getInstance().setActiveProfile((Profile) profileCombo.getSelectedItem());
         ProfileComponent.getInstance().setUseQuotes(quotesCheckbox.isSelected());
         ValidationComponent.getInstance().setAutoValidate(autoValidateCheckbox.isSelected());
@@ -83,6 +85,7 @@ public class SmartCaseConfigurable implements Configurable {
         environmentCombo.setSelectedItem(EnvironmentComponent.getInstance().getActiveEnvironment());
         preProcessCheckBox.setSelected(EnvironmentComponent.getInstance().isPreProcess());
         deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
+        hotDeployCheckBox.setSelected(EnvironmentComponent.getInstance().isHotDeploy());
         profileCombo.setSelectedItem(ProfileComponent.getInstance().getActiveProfile());
         quotesCheckbox.setSelected(ProfileComponent.getInstance().useQuotes());
         autoValidateCheckbox.setSelected(ValidationComponent.getInstance().isAutoValidate());
@@ -115,10 +118,14 @@ public class SmartCaseConfigurable implements Configurable {
         deployCheckBox = new JCheckBox("Auto deploy after successful upload");
         deployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
 
+        hotDeployCheckBox = new JCheckBox("Prefere hotdeploy");
+        hotDeployCheckBox.setSelected(EnvironmentComponent.getInstance().isAutoDeploy());
+
         JPanel environmentPanel = new JPanel(new BorderLayout(5, 5));
         environmentPanel.add(environmentCombo, BorderLayout.NORTH);
         environmentPanel.add(preProcessCheckBox, BorderLayout.CENTER);
         environmentPanel.add(deployCheckBox, BorderLayout.SOUTH);
+        environmentPanel.add(hotDeployCheckBox, BorderLayout.SOUTH);
         return environmentPanel;
     }
 
