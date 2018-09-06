@@ -22,9 +22,8 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-    maven {
-        url 'http://sdf.csin.cz/artifactory/plugins.gradle.org/'
-    }
+    maven { url 'http://sdf.csin.cz/artifactory/repo' }
+    maven { url 'http://sdf.csin.cz/artifactory/plugins.gradle.org/' }
     mavenCentral()
 }
 
