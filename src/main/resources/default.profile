@@ -643,7 +643,6 @@
         <completion for="/requisition/transitions/from/name">
             <value type="activityName"/>
         </completion>
-        <completion for="/requisition/transitions/from/name"/>
         <completion for="/requisition/transitions/from/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
