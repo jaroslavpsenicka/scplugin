@@ -9,7 +9,7 @@
             <value type="string" required="true" notes="lidsky čitelné jméno procesu">label</value>
             <value type="string" required="true" notes="technické jméno procesu">name</value>
             <value type="object" required="true" notes="náhled dat case">overview</value>
-            <value type="integer" required="true" notes="verze procesu (může být 1)" defaultValue="1" >revision</value>
+            <value type="integer" required="true" notes="verze procesu (může být 1)" defaultValue="1">revision</value>
             <value type="string" required="true" notes="kod procesu pro JEF" defaultValue="CTXXX">caseType</value>
             <value type="array" notes="role uživatele">authorizedRoles</value>
             <value type="string" icon="nodes/enum">categorizationExpression</value>
@@ -126,8 +126,11 @@
             <value type="object">documentRepository</value>
             <value type="string" notes="attr pro ulozeni těla zprávy" icon="css/atrule">emailContentFieldName</value>
             <value type="string" notes="attr pro ulozeni odesilatele" icon="css/atrule">emailFromFieldName</value>
-            <value type="string" notes="attr pro ulozeni předmětu zprávy" icon="css/atrule">emailSubjectFieldName</value>
-            <value type="boolean" notes="podmínka pro použití konfigurace" icon="nodes/enum" defaultValue="true">expression</value>
+            <value type="string" notes="attr pro ulozeni předmětu zprávy" icon="css/atrule">emailSubjectFieldName
+            </value>
+            <value type="boolean" notes="podmínka pro použití konfigurace" icon="nodes/enum" defaultValue="true">
+                expression
+            </value>
             <value type="string" notes="schránka příchozí pošty" defaultValue="mailbox@csas.cz">mailbox</value>
             <value type="integer" defaultValue="100">priority</value>
         </completion>
@@ -637,6 +640,9 @@
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
+        <completion for="/requisition/transitions/from/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/requisition/transitions/from/name"/>
         <completion for="/requisition/transitions/from/type">
             <value type="enum">ACTIVITY</value>
@@ -649,7 +655,9 @@
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/requisition/transitions/to/name"/>
+        <completion for="/requisition/transitions/to/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/requisition/transitions/to/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
@@ -879,7 +887,8 @@
             <value type="string">expression</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/tasks/configurations/dueDate/duration" ref="/configurations/estimatedCompletionDate/duration"/>
+        <completion for="/tasks/configurations/dueDate/duration"
+                    ref="/configurations/estimatedCompletionDate/duration"/>
         <completion for="/tasks/configurations/dueDate/expression"/>
         <completion for="/tasks/configurations/dueDate/type">
             <value type="enum">NOW</value>
@@ -1333,7 +1342,9 @@
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/tasks/transitions/from/name"/>
+        <completion for="/tasks/transitions/from/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/tasks/transitions/from/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
@@ -1345,7 +1356,9 @@
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/tasks/transitions/to/name"/>
+        <completion for="/tasks/transitions/to/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/tasks/transitions/to/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
@@ -1370,7 +1383,7 @@
             <value type="string">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/transitions/from/name"/>
+
         <completion for="/transitions/from/type">
             <value type="enum">TASK</value>
             <value type="enum">START</value>
