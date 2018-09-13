@@ -10,7 +10,7 @@ public class EnvironmentSerializationTest {
     @Test
     public void testDefaultEnvironments() {
         EnvironmentList envs = new EnvironmentList(getClass().getResourceAsStream("/default.environments"));
-        assertEquals("DEVA (latest greatest)", envs.getEnvironments().get(0).getName());
+        assertEquals("INT (almost ready)", envs.getEnvironments().get(0).getName());
     }
 
 

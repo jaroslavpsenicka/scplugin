@@ -10,9 +10,8 @@ public class ProfileSerializationTest {
     @Test
     public void testDefaultProfile() {
         Profile profile = new Profile(getClass().getResourceAsStream("/default.profile"));
-        assertEquals("Default Profile", profile.getName());
-        assertEquals("[name, label, description, revision, caseType, createdBy, createDate, " +
-                        "presentationSubject, emailConfigurations, configurations, header, overview, attributes, tasks]",
+        assertEquals("default", profile.getName());
+        assertEquals("[attributes, createDate, createdBy, label, name, overview, revision, caseType, authorizedRoles, categorizationExpression, configurations, description, domain, emailConfigurations, expressions, header, importConfigurations, presentationSubject, requisition, serviceMocks, shredding, tags, tasks, transitions, uniqueHashAttributes, uniqueHashAttributesExpression, validationType]",
                 profile.getCompletionsForPath("/").toString());
     }
 
