@@ -8,6 +8,8 @@ import cz.csas.smart.idea.model.Completion;
 import cz.csas.smart.idea.model.Task;
 import cz.csas.smart.idea.model.Transition;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,6 +17,14 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang.StringUtils.strip;
 
 public class PsiUtils {
+    private static final Logger log = LoggerFactory.getLogger(PsiUtils.class);
+
+    private static final String TRANSITIONS = "transitions";
+    private static final String NAME = "name";
+    private static final String TASKS = "tasks";
+    private static final String ATTRIBUTES = "attributes";
+    private static final String ACTIVITIES = "activities";
+    private static final String REQUISITION = "requisition";
 
     public static final Comparator<Completion.Value> bySeverityAndName = (first, second) -> {
         if (first == null || second == null) return 0;
@@ -72,19 +82,14 @@ public class PsiUtils {
         return PsiTreeUtil.getParentOfType(element, JsonFile.class);
     }
 
-    public static PsiElement findTaskRoot(PsiElement element) {
-        JsonProperty topmostProperty = PsiTreeUtil.getTopmostParentOfType(element, JsonProperty.class);
-        return topmostProperty != null ? topmostProperty.getParent() : null;
-    }
-
     public static List<Completion.Value> getAttributes(PsiElement element, String ofType) {
         Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
-                .filter(jp -> "attributes".equals(jp.getName()))
+                .filter(jp -> ATTRIBUTES.equals(jp.getName()))
                 .findFirst();
         if (attributesProperty.isPresent()) {
             JsonProperty attributesElement = attributesProperty.get();
             return PsiTreeUtil.findChildrenOfType(attributesElement, JsonProperty.class).stream()
-                    .filter(jp -> "name".equals(jp.getName()))
+                    .filter(jp -> NAME.equals(jp.getName()))
                     .map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), findAttributeType(jp)))
                     .map(nt -> nt.requiredIfType(ofType))
                     .collect(Collectors.toList());
@@ -94,15 +99,72 @@ public class PsiUtils {
     }
 
     public static List<Completion.Value> getActivities(PsiElement element) {
-        Optional<JsonProperty> attributesProperty = PsiTreeUtil.findChildrenOfType(findTaskRoot(element), JsonProperty.class).stream()
-                .filter(jp -> "activities".equals(jp.getName()))
+        PsiElement parent = findParentTaskForElement(element);
+
+        if (parent == null) return Collections.emptyList();
+        return getActivitiesForTask(parent);
+    }
+
+    /**
+     * Najde task nebo requisitionu pro daný element. Když nic nenajde vrátí null.
+     */
+    public static PsiElement findParentTaskForElement(PsiElement element) {
+        final PsiElement root = findRoot(element);
+        Optional<JsonProperty> tasksPropOpt = PsiTreeUtil.findChildrenOfType(root, JsonProperty.class).stream()
+                .filter(jp -> TASKS.equals(jp.getName()))
+                .findAny();
+        PsiElement rootTask = null;
+        if (tasksPropOpt.isPresent() && tasksPropOpt.get().getValue() != null) {
+            final JsonProperty taskWrapper = tasksPropOpt.get();
+
+            final PsiElement[] tasks = taskWrapper.getValue().getChildren();
+            for (PsiElement task : tasks) {
+                if (PsiTreeUtil.isAncestor(task, element, true)) {
+                    rootTask = task;  //našli jsme task, který je rootem daného elementu
+                    break;
+                }
+            }
+        }
+
+        if (rootTask == null) { //Ještě roota nemáme? Tak to asi bude requsitiona
+            Optional<JsonProperty> requisitionOpt = PsiTreeUtil.findChildrenOfType(root, JsonProperty.class).stream()
+                    .filter(jp -> REQUISITION.equals(jp.getName()))
+                    .findAny();
+            if (requisitionOpt.isPresent() && PsiTreeUtil.isAncestor(requisitionOpt.get(), element, true)) {
+                rootTask = requisitionOpt.get();
+            }
+        }
+
+        return rootTask;
+    }
+
+    /**
+     * Najde aktivity pro task nebo requsitionu
+     */
+    public static List<Completion.Value> getActivitiesForTask(PsiElement task) {
+
+        Optional<JsonProperty> firstActivityOpt = PsiTreeUtil.findChildrenOfType(task, JsonProperty.class).stream()
+                .filter(jp -> ACTIVITIES.equals(jp.getName()))
                 .findFirst();
-        if (attributesProperty.isPresent()) {
-            JsonProperty attributesElement = attributesProperty.get();
-            return PsiTreeUtil.findChildrenOfType(attributesElement.getParent(), JsonProperty.class).stream()
-                    .filter(jp -> "name".equals(jp.getName()))
-                    .map(jp -> new Completion.Value(strip(jp.getValue().getText(), "\""), null))
-                    .collect(Collectors.toList());
+        if (firstActivityOpt.isPresent()) {
+            JsonProperty firstActivity = firstActivityOpt.get();
+
+            final PsiElement[] children = firstActivity.getLastChild().getChildren();
+
+            List<Completion.Value> activityNames = new ArrayList<>();
+            for (PsiElement e : children) {
+                if (e instanceof JsonObject) {
+                    final PsiElement[] activities = e.getChildren();
+                    for (PsiElement a : activities) {
+                        if (a instanceof JsonProperty && NAME.equals(((JsonProperty) a).getName())) {
+                            final Completion.Value value = new Completion.Value(strip(((JsonProperty) a).getValue().getText(), "\""), null);
+                            activityNames.add(value);
+                        }
+                    }
+                }
+            }
+            return activityNames;
+
         }
 
         return Collections.emptyList();
@@ -110,7 +172,7 @@ public class PsiUtils {
 
     public static List<Task> getTasks(PsiElement element, String ofType) {
         Optional<JsonProperty> tasksPropOpt = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
-                .filter(jp -> "tasks".equals(jp.getName()))
+                .filter(jp -> TASKS.equals(jp.getName()))
                 .findFirst();
         if (tasksPropOpt.isPresent()) {
             if (tasksPropOpt.get().getValue() instanceof JsonArray) {
@@ -118,7 +180,7 @@ public class PsiUtils {
                         .map(a -> Arrays.stream(a.getChildren())
                                 .filter(o -> o instanceof JsonProperty)
                                 .map(jp -> (JsonProperty) jp)
-                                .filter(jp -> "name".equals(jp.getName()))
+                                .filter(jp -> NAME.equals(jp.getName()))
                                 .map(jp -> new Task(strip(jp.getValue().getText(), "\""), findTaskType(jp)))
                                 .findFirst().orElse(null))
                         .filter(t -> t.getName() != null)
@@ -131,7 +193,7 @@ public class PsiUtils {
 
     public static List<Transition> getTransitions(PsiElement element) {
         Optional<JsonProperty> tranPropOpt = PsiTreeUtil.findChildrenOfType(findRoot(element), JsonProperty.class).stream()
-                .filter(jp -> "transitions".equals(jp.getName()))
+                .filter(jp -> TRANSITIONS.equals(jp.getName()))
                 .findFirst();
         if (tranPropOpt.isPresent()) {
             if (tranPropOpt.get().getValue() instanceof JsonArray) {
@@ -149,7 +211,7 @@ public class PsiUtils {
         return Arrays.stream(value.getChildren())
                 .filter(o -> o instanceof JsonProperty)
                 .map(jp -> (JsonProperty) jp)
-                .filter(jp -> "name".equals(jp.getName()))
+                .filter(jp -> NAME.equals(jp.getName()))
                 .map(jp -> jp.getValue().getText())
                 .findFirst().orElse(null);
     }
@@ -165,7 +227,7 @@ public class PsiUtils {
                     .findFirst().orElse(null);
             if ("TASK".equals(type)) {
                 return PsiTreeUtil.findChildrenOfType(from.get(), JsonProperty.class).stream()
-                        .filter(jp -> "name".equals(jp.getName()))
+                        .filter(jp -> NAME.equals(jp.getName()))
                         .map(jp -> jp.getValue().getText())
                         .findFirst().orElse(null);
             }
@@ -208,7 +270,7 @@ public class PsiUtils {
         JsonProperty propertiesElement = PsiTreeUtil.getParentOfType(propertyNameElement, JsonProperty.class);
         JsonProperty editorElement = PsiTreeUtil.getParentOfType(propertiesElement, JsonProperty.class);
         return PsiTreeUtil.findChildrenOfType(editorElement, JsonProperty.class).stream()
-                .filter(jp -> "name".equals(jp.getName()))
+                .filter(jp -> NAME.equals(jp.getName()))
                 .map(jp -> strip(jp.getValue().getText(), "\""))
                 .findFirst().orElse(null);
     }
@@ -223,7 +285,7 @@ public class PsiUtils {
                 .findFirst();
         if (editorElement.isPresent()) {
             return PsiTreeUtil.findChildrenOfType(editorElement.get().getValue(), JsonProperty.class).stream()
-                    .filter(jp -> "name".equals(jp.getName()))
+                    .filter(jp -> NAME.equals(jp.getName()))
                     .map(jp -> strip(jp.getValue().getText(), "\""))
                     .findFirst().orElse(null);
         }
