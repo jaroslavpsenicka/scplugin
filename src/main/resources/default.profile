@@ -1349,7 +1349,9 @@
             <value type="enum">START</value>
             <value type="enum">END</value>
         </completion>
-        <completion for="/tasks/transitions/name"/>
+        <completion for="/tasks/transitions/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/tasks/transitions/outputAttributes"/>
         <completion for="/tasks/transitions/to">
             <value type="string" required="true">name</value>
