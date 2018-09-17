@@ -1397,7 +1397,12 @@
             <value type="string">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/transitions/to/name"/>
+        <completion for="/transitions/to/name">
+            <value type="taskName"/>
+        </completion>
+        <completion for="/transitions/from/name">
+            <value type="taskName"/>
+        </completion>
         <completion for="/transitions/to/type">
             <value type="enum">TASK</value>
             <value type="enum">START</value>
