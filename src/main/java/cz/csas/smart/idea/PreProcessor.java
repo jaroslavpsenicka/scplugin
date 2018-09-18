@@ -4,6 +4,7 @@ import com.intellij.mock.MockVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.io.IOUtils;
 
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,13 +18,13 @@ public class PreProcessor {
     }
 
     public VirtualFile process(VirtualFile file) throws Exception {
-        String contents = new String(file.contentsToByteArray());
+        String contents = new String(file.contentsToByteArray(), Charset.forName("UTF-8"));
         StringBuffer buffer = new StringBuffer(contents);
         Matcher matcher = pattern.matcher(contents);
         while (matcher.find()) {
             VirtualFile refFile = file.getParent().findFileByRelativePath(matcher.group(1));
             if (refFile != null && refFile.exists()) {
-                buffer.replace(matcher.start(), matcher.end(), IOUtils.toString(refFile.getInputStream()));
+                buffer.replace(matcher.start(), matcher.end(), IOUtils.toString(refFile.getInputStream(), "UTF-8"));
             } else throw new IllegalStateException("file " + matcher.group(1) + " not found");
 
             matcher = pattern.matcher(buffer.toString());
