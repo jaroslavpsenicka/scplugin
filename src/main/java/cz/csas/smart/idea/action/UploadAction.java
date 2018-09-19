@@ -24,11 +24,13 @@ public class UploadAction extends AnAction {
         VirtualFile file = ctx.getData(DataKeys.VIRTUAL_FILE);
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(DataKeys.PROJECT.getData(ctx));
 
-        if (EnvironmentComponent.getInstance().isPreProcess()) try {
-            file = new PreProcessor().process(file);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error pre-processing the file, " + ex.getMessage());
-            return;
+        if (EnvironmentComponent.getInstance().isPreProcess()) {
+            try {
+                file = new PreProcessor().process(file);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error pre-processing the file, " + ex.getMessage());
+                return;
+            }
         }
 
         Uploader uploader = new Uploader(file, statusBar);
