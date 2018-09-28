@@ -640,7 +640,9 @@
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/requisition/transitions/from/name"/>
+        <completion for="/requisition/transitions/from/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/requisition/transitions/from/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
@@ -652,7 +654,9 @@
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/requisition/transitions/to/name"/>
+        <completion for="/requisition/transitions/to/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/requisition/transitions/to/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
@@ -675,6 +679,7 @@
         <completion for="/tasks">
             <value type="string" required="true">label</value>
             <value type="string" required="true">name</value>
+            <value type="boolean">startImmediately</value>
             <value type="array">actions</value>
             <value type="array">activities</value>
             <value type="string">avosDomain</value>
@@ -1337,19 +1342,25 @@
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/tasks/transitions/from/name"/>
+        <completion for="/tasks/transitions/from/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/tasks/transitions/from/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
             <value type="enum">END</value>
         </completion>
-        <completion for="/tasks/transitions/name"/>
+        <completion for="/tasks/transitions/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/tasks/transitions/outputAttributes"/>
         <completion for="/tasks/transitions/to">
             <value type="string" required="true">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/tasks/transitions/to/name"/>
+        <completion for="/tasks/transitions/to/name">
+            <value type="activityName"/>
+        </completion>
         <completion for="/tasks/transitions/to/type">
             <value type="enum">ACTIVITY</value>
             <value type="enum">START</value>
@@ -1375,10 +1386,6 @@
             <value type="object">type</value>
         </completion>
 
-        <completion for="/transitions/from/name">
-
-        </completion>
-
         <completion for="/transitions/from/type">
             <value type="enum">TASK</value>
             <value type="enum">START</value>
@@ -1391,7 +1398,12 @@
             <value type="string">name</value>
             <value type="object">type</value>
         </completion>
-        <completion for="/transitions/to/name"/>
+        <completion for="/transitions/to/name">
+            <value type="taskName"/>
+        </completion>
+        <completion for="/transitions/from/name">
+            <value type="taskName"/>
+        </completion>
         <completion for="/transitions/to/type">
             <value type="enum">TASK</value>
             <value type="enum">START</value>
